@@ -84,7 +84,7 @@ a.  **Quantization: Reducing Model Size**
 
 **Practical Example (llama.cpp with GGUF):**
 
-            ```
+          
 - 1. Download llama.cpp
             ```
             git clone https://github.com/ggerganov/llama.cpp
