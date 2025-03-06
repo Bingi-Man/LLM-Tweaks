@@ -29,7 +29,7 @@ a.  **Quantization: Reducing Model Size**
 
 Practical Example (GPTQ - AutoGPTQ):
 
-            ```python
+            ```
             # Install AutoGPTQ (if you haven't already)
             # pip install auto-gptq
             # pip install optimum  # For safetensors support
