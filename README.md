@@ -85,20 +85,20 @@ a.  **Quantization: Reducing Model Size**
 **Practical Example (llama.cpp with GGUF):**
 
             ```
-# 1. Download llama.cpp
+- 1. Download llama.cpp
             ```
             git clone https://github.com/ggerganov/llama.cpp
             cd llama.cpp
             ```
             
-# 2. Build llama.cpp (ensure you have a C++ compiler and CMake)
+- 2. Build llama.cpp (ensure you have a C++ compiler and CMake)
             ```
             make
             # If you have a GPU, add the following flags (adjust for your CUDA version):
             # make LLAMA_CUDA=1 CUDA_DIR=/usr/local/cuda
             ```
             
-# 3. Download a GGUF model (e.g., TinyLlama-1.1B-Chat-v1.0-Q4_K_M)
+- 3. Download a GGUF model (e.g., TinyLlama-1.1B-Chat-v1.0-Q4_K_M)
             ```
             # (Find a GGUF model on the Hugging Face Hub)
             # Example:
@@ -106,7 +106,7 @@ a.  **Quantization: Reducing Model Size**
             # wget https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF/resolve/main/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf -O models/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf
             ```
             
-# 4. Run inference
+- 4. Run inference
             ```
             ./main -m models/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf -n 100 -p "Write a short story about a robot..." -t 8 -ngl 20
             # Adjust -ngl based on your GPU VRAM.  -t is threads.
