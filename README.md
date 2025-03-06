@@ -26,7 +26,9 @@ a.  **Quantization: Reducing Model Size**
 **Techniques:**
 
 **GPTQ/ExLlamaV2:** Fastest inference, excellent compression, especially with NVIDIA GPUs.
+
 **GGML/GGUF (llama.cpp):** Versatile, supports CPU and GPU, various quantization levels (Q4_0, Q4_K_M, etc.), and is highly optimized for efficiency.
+
 **Bitsandbytes (transformers):** Easy integration, supports 4-bit and 8-bit quantization, and mixed-precision strategies. Useful, but often less performant than GPTQ or llama.cpp on resource-constrained systems.
 
 **Practical Example (GPTQ - AutoGPTQ):**
