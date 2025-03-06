@@ -6,24 +6,30 @@
 
 These techniques aim to maximize performance for running Large Language Models (LLMs) on resource-constrained Linux systems.
 
-**I. Core Optimization Pillars**
+### **I. Core Optimization Pillars**
 
 1.  **Memory Optimization (VRAM & RAM):** Crucial for fitting models within limited VRAM and RAM.
 2.  **Compute Optimization (GPU & CPU):** Maximize utilization of GPU and CPU for faster inference.
 3.  **Efficient Threading:** Minimize overhead from thread synchronization and management.
 
-**II. Key Optimization Techniques & Commands**
+### **II. Key Optimization Techniques & Commands**
 
 1.  **Memory Optimization Techniques**
+  
 
-    a.  **Quantization: Reducing Model Size**
+a.  **Quantization: Reducing Model Size**
+    
 **Concept:** Quantization reduces the precision of model weights and activations, dramatically decreasing memory usage and often speeding up computation.
-        *   **Why it Works:** Lower precision means fewer bits per parameter, allowing larger models to fit in VRAM. Lower precision also often leads to faster computations, especially on hardware optimized for lower precision arithmetic (like INT8).
-        *   **Techniques:**
-            *   **GPTQ/ExLlamaV2:** Fastest inference, excellent compression, especially with NVIDIA GPUs.
-            *   **GGML/GGUF (llama.cpp):** Versatile, supports CPU and GPU, various quantization levels (Q4_0, Q4_K_M, etc.), and is highly optimized for efficiency.
-            *   **Bitsandbytes (transformers):** Easy integration, supports 4-bit and 8-bit quantization, and mixed-precision strategies. Useful, but often less performant than GPTQ or llama.cpp on resource-constrained systems.
-        *   **Practical Example (GPTQ - AutoGPTQ):**
+
+**Why it Works:** Lower precision means fewer bits per parameter, allowing larger models to fit in VRAM. Lower precision also often leads to faster computations, especially on hardware optimized for lower precision arithmetic (like INT8).
+
+**Techniques:**
+
+**GPTQ/ExLlamaV2:** Fastest inference, excellent compression, especially with NVIDIA GPUs.
+**GGML/GGUF (llama.cpp):** Versatile, supports CPU and GPU, various quantization levels (Q4_0, Q4_K_M, etc.), and is highly optimized for efficiency.
+**Bitsandbytes (transformers):** Easy integration, supports 4-bit and 8-bit quantization, and mixed-precision strategies. Useful, but often less performant than GPTQ or llama.cpp on resource-constrained systems.
+
+**Practical Example (GPTQ - AutoGPTQ):**
 
             ```python
             # Install AutoGPTQ (if you haven't already)
@@ -76,86 +82,111 @@ These techniques aim to maximize performance for running Large Language Models (
             print(f"Number of parameters: {model.num_parameters()}")
             ```
 
-        *   **Practical Example (llama.cpp with GGUF):**
+**Practical Example (llama.cpp with GGUF):**
 
-            ```bash
-            # 1. Download llama.cpp
+            ```
+# 1. Download llama.cpp
+            ```
             git clone https://github.com/ggerganov/llama.cpp
             cd llama.cpp
-
-            # 2. Build llama.cpp (ensure you have a C++ compiler and CMake)
+            ```
+            
+# 2. Build llama.cpp (ensure you have a C++ compiler and CMake)
+            ```
             make
             # If you have a GPU, add the following flags (adjust for your CUDA version):
             # make LLAMA_CUDA=1 CUDA_DIR=/usr/local/cuda
-
-            # 3. Download a GGUF model (e.g., TinyLlama-1.1B-Chat-v1.0-Q4_K_M)
+            ```
+            
+# 3. Download a GGUF model (e.g., TinyLlama-1.1B-Chat-v1.0-Q4_K_M)
+            ```
             # (Find a GGUF model on the Hugging Face Hub)
             # Example:
             mkdir -p models
             # wget https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF/resolve/main/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf -O models/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf
-
-            # 4. Run inference
+            ```
+            
+# 4. Run inference
+            ```
             ./main -m models/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf -n 100 -p "Write a short story about a robot..." -t 8 -ngl 20
             # Adjust -ngl based on your GPU VRAM.  -t is threads.
             ```
 
-        *   **Explanation:**
+**Explanation:**
+
             *   `-m`: Path to the GGUF model.
             *   `-n`: Number of tokens to generate.
             *   `-p`: Prompt.
             *   `-t`: Number of threads (adjust to your CPU's core count).
             *   `-ngl`: Number of layers to offload to the GPU (adjust based on VRAM).
-        *   **Adjust `-ngl`:** Emphasize the importance of adjusting `-ngl` based on your GPU's VRAM. Start with a low value (e.g., 20) and increase it until you run out of memory.
-        *   **Group Size:** In GPTQ, the `group_size` parameter controls how the weights are quantized in groups. Smaller group sizes can lead to better accuracy but may increase quantization time.
-        *   **Bitsandbytes:** While bitsandbytes is easy to integrate with Transformers, it can sometimes be less performant than GPTQ or llama.cpp, especially on resource-constrained systems. It's still a good option for experimentation and for models that don't have pre-quantized GPTQ or GGUF versions.
-        *   **Mixed-Precision:**
+            
+**Adjust `-ngl`:** Emphasize the importance of adjusting `-ngl` based on your GPU's VRAM. Start with a low value (e.g., 20) and increase it until you run out of memory.
+
+**Group Size:** In GPTQ, the `group_size` parameter controls how the weights are quantized in groups. Smaller group sizes can lead to better accuracy but may increase quantization time.
+
+**Bitsandbytes:** While bitsandbytes is easy to integrate with Transformers, it can sometimes be less performant than GPTQ or llama.cpp, especially on resource-constrained systems. It's still a good option for experimentation and for models that don't have pre-quantized GPTQ or GGUF versions.
+
+**Mixed-Precision:**
             *   **GPTQ:** Mixed-precision is often handled automatically by the GPTQ library.
             *   **llama.cpp:** Mixed-precision is often handled automatically by the GGUF model.
             *   **Transformers/bitsandbytes:** Use `torch.float16` or `torch.bfloat16` for model loading and operations.
 
-            ```python
+
             model_4bit = AutoModelForCausalLM.from_pretrained(model_id, device_map='auto', load_in_4bit=True, torch_dtype=torch.float16)
-            ```
+              ```
+            
+            
+b.  **Model Selection: Choosing Smaller, Efficient Models**
+    
 
-    b.  **Model Selection: Choosing Smaller, Efficient Models**
+**Concept:** Choosing a smaller, more efficient model is a fundamental optimization.
 
-        *   **Concept:** Choosing a smaller, more efficient model is a fundamental optimization.
-        *   **Strategies:**
+**Strategies:**
+
             *   Smaller Parameter Models: 1B-7B models (e.g., TinyLlama, smaller Llama variants).
             *   Distilled/Optimized Models: Models specifically trained for efficiency.
             *   Tokenizer Efficiency: Consider models with efficient tokenizers (e.g., SentencePiece).
-        *   **Action:** Explore the Hugging Face Hub.
-        *   **Specific Model Recommendations:**
+            
+**Action:** Explore the Hugging Face Hub.
+
+**Specific Model Recommendations:**
+
             *   TinyLlama-1.1B-Chat-v1.0: A great starting point. Look for GPTQ or GGUF quantized versions. [Link to Hugging Face Hub](https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GPTQ)
             *   Smaller Llama 2 variants (e.g., 7B): Quantized versions can often run well. [Link to Hugging Face Hub](https://huggingface.co/models?search=llama+2)
             *   Distilled models: Models specifically trained for efficiency (search the Hugging Face Hub).
 
-    c.  **Offloading to System RAM/NVMe**
+c.  **Offloading to System RAM/NVMe**
 
-        *   **Concept:** When the GPU's VRAM is insufficient, offload some model layers to system RAM or the NVMe drive. This trades off some speed for the ability to run larger models.
-        *   **Implementation:** Frameworks like `accelerate` from Hugging Face, and libraries such as `torch.distributed.offload` in recent versions of PyTorch, allow for offloading layers. The NVMe drive, due to its speed, is preferable to HDD for offloading.
-        *   **Considerations:** The speed of your RAM and NVMe drive will directly impact performance. Monitor I/O performance with `iostat` to ensure the NVMe is not becoming a bottleneck.
-        *   **Advanced CPU Offloading and Hybrid Execution:**
+**Concept:** When the GPU's VRAM is insufficient, offload some model layers to system RAM or the NVMe drive. This trades off some speed for the ability to run larger models.
+
+**Implementation:** Frameworks like `accelerate` from Hugging Face, and libraries such as `torch.distributed.offload` in recent versions of PyTorch, allow for offloading layers. The NVMe drive, due to its speed, is preferable to HDD for offloading.
+
+**Considerations:** The speed of your RAM and NVMe drive will directly impact performance. Monitor I/O performance with `iostat` to ensure the NVMe is not becoming a bottleneck.
+
+**Advanced CPU Offloading and Hybrid Execution:**
             *   Intelligent Layer Offloading: Dynamically offload layers based on real-time VRAM usage, potentially moving layers between GPU and CPU/RAM as needed.
             *   Asynchronous Offloading and Pipelining: Ensure offloading is asynchronous and pipelined with GPU computation to minimize performance stalls.
             *   NUMA-Aware Offloading: Optimize offloading by considering NUMA architecture, offloading data to the NUMA node closest to the CPU cores handling those computations.
 
-    d.  **Memory Mapping and Shared Memory:**
+d.  **Memory Mapping and Shared Memory:**
 
-        *   **Concept:** Loading model parts on demand and sharing memory between processes.
-        *   **Requires:** Careful management and can introduce I/O overhead.
-        *   **mmap:** mmap allows mapping a file (containing the LLM weights) directly into the process's address space. This avoids loading the entire model into RAM at once; pages are loaded only when needed. This significantly reduces the initial memory footprint. However, excessive page faults (when a requested page is not in RAM and must be fetched from disk) can severely impact performance. Monitor I/O using `iostat -x 1`. A high `%iowait` (consistently above 30-40%, for example) indicates excessive paging, suggesting mmap is not beneficial in your specific case. If this occurs, consider alternative strategies like model quantization (discussed later) or carefully selecting a smaller model. For detailed information, consult the mmap manual page: `man 2 mmap`. Consider using tools like `perf` to profile the application and identify the specific areas contributing to high I/O.
+**Concept:** Loading model parts on demand and sharing memory between processes.
 
-    e.  **Gradient/Activation Checkpointing:**
+**Requires:** Careful management and can introduce I/O overhead.
 
-        *   **Concept:** This technique is primarily used during training, not inference. It trades memory for computation. Instead of storing all activations or gradients during the forward and backward passes, they are recomputed when needed. This drastically reduces memory usage but increases training time. The optimal checkpointing strategy depends on the balance between available memory and computational resources. PyTorch offers built-in support: [PyTorch Gradient Checkpointing](https://pytorch.org/docs/stable/checkpoint.html). Experimentation with different checkpointing intervals is crucial to find the optimal trade-off.
+**mmap:** mmap allows mapping a file (containing the LLM weights) directly into the process's address space. This avoids loading the entire model into RAM at once; pages are loaded only when needed. This significantly reduces the initial memory footprint. However, excessive page faults (when a requested page is not in RAM and must be fetched from disk) can severely impact performance. Monitor I/O using `iostat -x 1`. A high `%iowait` (consistently above 30-40%, for example) indicates excessive paging, suggesting mmap is not beneficial in your specific case. If this occurs, consider alternative strategies like model quantization (discussed later) or carefully selecting a smaller model. For detailed information, consult the mmap manual page: `man 2 mmap`. Consider using tools like `perf` to profile the application and identify the specific areas contributing to high I/O.
 
-    f.  **Paged Attention:**
+e.  **Gradient/Activation Checkpointing:**
 
-        *   **Concept:** Advanced memory management for long contexts.
-        *   **Implementation:** (If applicable to your framework - this is a general concept)
+**Concept:** This technique is primarily used during training, not inference. It trades memory for computation. Instead of storing all activations or gradients during the forward and backward passes, they are recomputed when needed. This drastically reduces memory usage but increases training time. The optimal checkpointing strategy depends on the balance between available memory and computational resources. PyTorch offers built-in support: [PyTorch Gradient Checkpointing](https://pytorch.org/docs/stable/checkpoint.html). Experimentation with different checkpointing intervals is crucial to find the optimal trade-off.
 
-            ```python
+f.  **Paged Attention:**
+
+**Concept:** Advanced memory management for long contexts.
+
+**Implementation:** (If applicable to your framework - this is a general concept)
+
+            ```
             # Example (Conceptual - check your framework's documentation)
             from transformers import AutoModelForCausalLM, AutoTokenizer
             from accelerate import init_empty_weights, load_checkpoint_and_dispatch
@@ -177,33 +208,39 @@ These techniques aim to maximize performance for running Large Language Models (
             )
             ```
 
-2.  **Compute Optimization Techniques**
+3.  **Compute Optimization Techniques**
 
-    a.  **Hardware Acceleration: Leveraging BLAS and GPU for Speed**
+a.  **Hardware Acceleration: Leveraging BLAS and GPU for Speed**
 
-        *   **Concept:** Utilize GPU and BLAS to maximize compute efficiency.
-        *   **BLAS (Basic Linear Algebra Subprograms):** Libraries are crucial for accelerating matrix operations, which are fundamental to LLMs. You have two main options:
+**Concept:** Utilize GPU and BLAS to maximize compute efficiency.
+
+**BLAS (Basic Linear Algebra Subprograms):** Libraries are crucial for accelerating matrix operations, which are fundamental to LLMs. You have two main options:
+
             *   cuBLAS (NVIDIA): Highly optimized for NVIDIA GPUs. Generally the fastest option if you have an NVIDIA GPU and CUDA installed.
             *   OpenBLAS: Optimized for CPUs. A good fallback if you don't have an NVIDIA GPU or if cuBLAS isn't working correctly.
-        *   **GPU Offloading (llama.cpp):** Offload layers to GPU to leverage GPU compute.
+            
+**GPU Offloading (llama.cpp):** Offload layers to GPU to leverage GPU compute.
+        
             ```bash
             # GPU offload layers (example: 20 layers to GPU, 8 threads, batch size 512)
             ./main -m models/model.gguf -ngl 20 -p "Prompt..." -t 8 -b 512
             # Adjust -ngl based on your GPU VRAM usage and model size.
             ```
-        *   **Compilation:**
+**Compilation:**
+
             *   For CPU only (OpenBLAS - default if no CUDA)
-                ```bash
+                ```
                 make
                 ```
             *   For NVIDIA GPU with cuBLAS (adjust CUDA_DIR if needed)
-                ```bash
+                ```
                 make LLAMA_CUDA=1 CUDA_DIR=/usr/local/cuda
                 ```
             *   If you want to force OpenBLAS (even with a GPU), you might need to modify the Makefile or use CMake directly (see below)
-            *   **CMake Example (for more control):**
+            
+**CMake Example (for more control):**
 
-                ```bash
+                ```
                 mkdir build
                 cd build
                 cmake .. -DCMAKE_BUILD_TYPE=Release -DLLAMA_CUBLAS=on -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc  # For cuBLAS
@@ -211,20 +248,23 @@ These techniques aim to maximize performance for running Large Language Models (
                 cmake .. -DCMAKE_BUILD_TYPE=Release -DOPENBLAS_INCLUDE_DIR=/path/to/openblas/include -DOPENBLAS_LIB=/path/to/openblas/lib/libopenblas.so  # For OpenBLAS (adjust paths)
                 make -j
                 ```
-        *   **OpenBLAS Tuning:** If you're using OpenBLAS, experiment with the `OPENBLAS_NUM_THREADS` environment variable to control the number of CPU threads used. Set it to the number of physical CPU cores (not including hyperthreads) for optimal performance. For example:
+**OpenBLAS Tuning:** If you're using OpenBLAS, experiment with the `OPENBLAS_NUM_THREADS` environment variable to control the number of CPU threads used. Set it to the number of physical CPU cores (not including hyperthreads) for optimal performance. For example:
 
-            ```bash
+            ```
             export OPENBLAS_NUM_THREADS=$(nproc --all)  # Sets to all cores
             ```
 
-    b.  **Inference Frameworks & Libraries**
+b.  **Inference Frameworks & Libraries**
 
-        *   **Concept:** The choice of inference framework significantly impacts performance and resource usage. For resource-constrained systems, **llama.cpp** is often the best choice due to its efficiency and excellent quantization support.
-        *   **Frameworks:**
+**Concept:** The choice of inference framework significantly impacts performance and resource usage. For resource-constrained systems, **llama.cpp** is often the best choice due to its efficiency and excellent quantization support.
+
+**Frameworks:**
+
             *   llama.cpp: C++, CPU/GPU, GGUF, highly optimized for efficiency and low resource usage. *Recommended for resource-constrained systems*.
             *   Transformers (Hugging Face): Python, versatile, wide model support, bitsandbytes integration. Good for prototyping, but can be less efficient.
             *   ExLlamaV2/AutoGPTQ: Python/CUDA, very fast inference specifically for GPTQ models.
-        *   **Comparison Table:**
+            
+**Comparison Table:**
 
             ```html
             <table>
@@ -283,13 +323,15 @@ These techniques aim to maximize performance for running Large Language Models (
             </table>
             ```
 
-    c.  **Speculative Decoding (llama.cpp)**
+c.  **Speculative Decoding (llama.cpp)**
 
-        *   **Concept:** Speed up inference with a draft model.
-        *   **Technique:** Use smaller "draft" model to predict tokens for larger "target" model, reducing computation on the slower target model.
-        *   **Practical Example (llama.cpp):**
+**Concept:** Speed up inference with a draft model.
 
-            ```bash
+**Technique:** Use smaller "draft" model to predict tokens for larger "target" model, reducing computation on the slower target model.
+
+**Practical Example (llama.cpp):**
+
+            ```
             # Example: Speculative Decoding with llama.cpp
             # Requires a target model and a draft model (both GGUF)
             # Replace model paths and adjust parameters as needed.
@@ -304,8 +346,8 @@ These techniques aim to maximize performance for running Large Language Models (
                 -t 8 \
                 -b 512
             ```
+**Explanation:**
 
-        *   **Explanation:**
             *   `-m`: Path to the *target* model (the larger, more accurate model).
             *   `-md`: Path to the *draft* model (the smaller, faster model).
             *   `-p`: Prompt.
@@ -314,22 +356,26 @@ These techniques aim to maximize performance for running Large Language Models (
             *   `-np`: Number of parallel sequences (adjust based on your CPU cores).
             *   `-t`: Number of threads.
             *   `-b`: Batch size.
-        *   **Draft Model Selection:** For speculative decoding, the choice of the draft model is crucial. It should be significantly smaller and faster than the target model, and it should be quantized to further reduce its memory footprint. A good strategy is to use a smaller, quantized version of the same model family as the target model.
-        *   **Parameter Tuning:** Experiment with the `--draft` and `-np` parameters to optimize performance. A larger `--draft` value can potentially increase speed, but it also increases the risk of the draft model making incorrect predictions. The `-np` parameter controls the number of parallel sequences. Adjust it based on your CPU core count.
+            
+**Draft Model Selection:** For speculative decoding, the choice of the draft model is crucial. It should be significantly smaller and faster than the target model, and it should be quantized to further reduce its memory footprint. A good strategy is to use a smaller, quantized version of the same model family as the target model.
 
-    d. **Model Parallelism and Pipeline Parallelism:**
+**Parameter Tuning:** Experiment with the `--draft` and `-np` parameters to optimize performance. A larger `--draft` value can potentially increase speed, but it also increases the risk of the draft model making incorrect predictions. The `-np` parameter controls the number of parallel sequences. Adjust it based on your CPU core count.
 
-        *   **Concept:**
+d. **Model Parallelism and Pipeline Parallelism:**
+
+**Concept:**
+
             *   Model Parallelism: Different parts of the model are distributed across GPUs. This is essential when the model is too large to fit on a single GPU. This involves partitioning the model's layers or parameters.
             *   Pipeline Parallelism: The processing of a sequence is divided into stages, each handled by a different GPU. This resembles an assembly line, where each GPU processes a portion of the input sequence.
         *   **Requires:** Both approaches require specialized frameworks like DeepSpeed or FairScale, and benefit greatly from high-bandwidth interconnects like NVLink. The choice depends on the model architecture, the number of GPUs, and communication overhead between GPUs. Careful consideration of communication costs is essential.
 
-3.  **Efficient Threading**
+4.  **Efficient Threading**
 
-    a.  **Threading Optimizations (llama.cpp)**
+a.  **Threading Optimizations (llama.cpp)**
 
-        *   **Concept:** Inefficient thread synchronization can limit CPU utilization. A key optimization is to replace the `sched_yield()` call in `ggml_graph_compute_thread` with a more efficient spin-wait instruction.
-        *   **Code Example:**
+**Concept:** Inefficient thread synchronization can limit CPU utilization. A key optimization is to replace the `sched_yield()` call in `ggml_graph_compute_thread` with a more efficient spin-wait instruction.
+
+**Code Example:**
 
             ```c
             // Example code modification in ggml.c (conceptual - apply to your local llama.cpp copy)
@@ -348,22 +394,30 @@ These techniques aim to maximize performance for running Large Language Models (
             } while (node_n == last);
             ```
 
-        *   **Explanation:**
-            *   **Include:** Include the necessary header for the `_mm_pause()` instruction.
-            *   **Conditional Compilation:** Use conditional compilation (`#ifdef`) to ensure the code is only compiled for x86 architectures. Provide a comment indicating where to put the ARM equivalent.
-            *   **Replace `sched_yield()`:** Replace the `sched_yield()` call with `SPIN_WAIT()`.
-            *   **Recompile:** Recompile llama.cpp after making this change.
-        *   **Thread Pool (Advanced):** Implementing a thread pool can further reduce thread creation/destruction overhead, but it's more complex to implement. This is an advanced optimization.
+**Explanation:**
 
-4.  **Fine-Tuning (Unsloth, LoRA, DPO)**
+**Include:** Include the necessary header for the `_mm_pause()` instruction.
+            
+**Conditional Compilation:** Use conditional compilation (`#ifdef`) to ensure the code is only compiled for x86 architectures. Provide a comment indicating where to put the ARM equivalent.
 
-    *   **Concept:** Tailor models, potentially improve efficiency for specific tasks and reduce model size through distillation.
-    *   **Techniques:**
+**Replace `sched_yield()`:** Replace the `sched_yield()` call with `SPIN_WAIT()`.
+
+**Recompile:** Recompile llama.cpp after making this change.
+            
+**Thread Pool (Advanced):** Implementing a thread pool can further reduce thread creation/destruction overhead, but it's more complex to implement. This is an advanced optimization.
+
+5.  **Fine-Tuning (Unsloth, LoRA, DPO)**
+
+**Concept:** Tailor models, potentially improve efficiency for specific tasks and reduce model size through distillation.
+
+**Techniques:**
+
         *   LoRA (Low-Rank Adaptation): Efficient fine-tuning, small trainable parameters, reduces VRAM usage during training.
         *   DPO (Direct Preference Optimization): Fine-tune based on preferences, can improve output quality.
         *   Unsloth Library: Simplifies fine-tuning, memory optimizations (4-bit, gradient checkpointing), excellent for memory-constrained GPUs.
         *   Model Distillation (Advanced): Train a smaller, more efficient "student" model to mimic a larger "teacher" model. Advanced techniques like knowledge distillation with contrastive learning can produce highly efficient models.
-    *   **Practical Example (Unsloth LoRA DPO - Minimal Example - Python):**
+        
+**Practical Example (Unsloth LoRA DPO - Minimal Example - Python):**
 
         ```python
         # Install Unsloth and dependencies
@@ -420,7 +474,7 @@ These techniques aim to maximize performance for running Large Language Models (
         tokenizer.save_pretrained("dpo_lora_adapters")
         ```
 
-        *   **Explanation:**
+**Explanation:**
             *   **Installation:** Include the `pip install` commands.
             *   **Model Loading:** Load the base model in 4-bit.
             *   **Dataset:** Load a dataset. *Important:* Replace the example dataset with your own data.
@@ -428,7 +482,9 @@ These techniques aim to maximize performance for running Large Language Models (
             *   **DPOConfig:** Configure the DPO trainer.
             *   **Trainer:** Create and run the DPO trainer.
             *   **Save:** Save the LoRA adapters.
-        *   **LoRA Configuration:**
+            
+**LoRA Configuration:**
+
             *   `r` (LoRA rank): Controls the rank of the low-rank matrices. Higher values increase the number of trainable parameters and can improve performance, but also increase memory usage. A common starting point is 16 or 32.
             *   `target_modules`: Specifies which layers to apply LoRA to. Common choices include `q_proj` and `v_proj` (query and value projection matrices in the attention layers).
         *   **Dataset Preparation:** The quality of your dataset is critical for fine-tuning. Ensure your dataset is well-formatted and contains high-quality examples relevant to your desired task. Preprocess your data (e.g., tokenization) before training.
@@ -438,7 +494,7 @@ These techniques aim to maximize performance for running Large Language Models (
 
 1.  **Create and Activate a Virtual Environment**
 
-    ```bash
+    ```
     python3 -m venv llm_env  # Create the environment
     source llm_env/bin/activate  # Activate the environment (Linux/macOS)
     # or
@@ -492,7 +548,7 @@ These techniques aim to maximize performance for running Large Language Models (
 
     *   **Python Framework Benchmarking:**
 
-        ```python
+        ```
         import time
         from transformers import AutoModelForCausalLM, AutoTokenizer
         import torch
@@ -537,7 +593,7 @@ These techniques aim to maximize performance for running Large Language Models (
 <p>Here are solutions to the most common problems encountered when running LLMs on resource-constrained systems:</p>
 
 1.  **CUDA Out of Memory (OOM) Errors**
-
+   
     *   Symptoms: The program crashes with an error message explicitly mentioning "CUDA out of memory" or "CUDA_ERROR_OUT_OF_MEMORY."
     *   Causes:
         *   Large Model Size: The model's size exceeds available VRAM.
@@ -582,7 +638,7 @@ These techniques aim to maximize performance for running Large Language Models (
             )
             ```
 
-2.  **BLAS Library Issues**
+3.  **BLAS Library Issues**
 
     *   Symptoms: Program crashes with segmentation faults, illegal instructions, or very slow inference speeds.
     *   Causes:
@@ -597,7 +653,7 @@ These techniques aim to maximize performance for running Large Language Models (
         *   Use System's BLAS: If you are having trouble with a custom BLAS installation, try using the system's provided BLAS library. This might not be as optimized but can help isolate the issue.
         *   Update BLAS Library: Ensure you are using a recent and compatible version of the BLAS library.
 
-3.  **Quantization and Model Loading Problems**
+4.  **Quantization and Model Loading Problems**
 
     *   Symptoms: Errors during model loading, such as "File not found," "Invalid magic number," or framework-specific error messages related to quantization.
     *   Causes:
@@ -614,7 +670,7 @@ These techniques aim to maximize performance for running Large Language Models (
         *   Convert Model Format: If necessary, convert the model to a compatible format. Tools like `convert-hf-to-gguf.py` can convert Hugging Face models to GGUF for use with llama.cpp.
         *   Check Framework Documentation: Consult the framework's documentation for specific instructions on loading quantized models and troubleshooting quantization-related issues.
 
-4.  **BLAS Library Issues**
+5.  **BLAS Library Issues**
 
     *   **Symptoms:** Program crashes with segmentation faults, illegal instructions, or very slow inference speeds.
     *   **Causes:**
@@ -658,7 +714,7 @@ This document outlines key techniques for optimizing the performance and efficie
     nvidia-smi
     ```
 * **Utilize Huge Pages (`hugeadm`) to Reduce Page Table Overhead:** For very large KV caches and long sequences, enabling huge pages can significantly reduce page table overhead. Huge pages are larger memory pages (e.g., 2MB or 1GB) than standard 4KB pages, resulting in fewer page table entries and faster address translation. Use `hugeadm` to configure and manage huge pages.
-    ```bash
+    ```
     # Check current hugepage settings
     cat /proc/meminfo | grep HugePages
 
@@ -673,14 +729,14 @@ This document outlines key techniques for optimizing the performance and efficie
     **Note:**  Ensure your system and kernel support huge pages.  The application needs to be configured to explicitly use huge page mappings.
 * **Experiment with Different Page Replacement Policies (LRU, FIFO) and Page Sizes:**  The optimal page replacement policy and page size can depend on the workload and access patterns. Experiment with LRU and FIFO (or other available policies in your chosen implementation) and different page sizes to find the best configuration for your specific use case.  Performance testing is crucial to determine the optimal settings.
 * **Use `perf` to Profile Page Fault Rates and Identify Bottlenecks:** The `perf` tool is a powerful Linux profiler that can be used to analyze page fault rates and identify memory access patterns. High page fault rates can indicate inefficient memory management or excessive page swapping.
-    ```bash
+    ```
     # Profile page faults during inference
     sudo perf stat -e minor-faults,major-faults your_inference_command
     ```
     Analyze the `perf stat` output to understand page fault behavior during LLM inference.
 * **Explore Memory-Mapping Techniques (e.g., `mmap`) for Faster KV Cache Access:**  Memory mapping (`mmap`) can potentially provide faster KV cache access by directly mapping files or shared memory regions into the process's address space. This can reduce system call overhead and improve data access locality.  Check if your LLM inference framework supports or can be configured to use `mmap` for KV cache management.
 * **Tune Kernel Parameters (e.g., `vm.swappiness`) to Optimize Page Cache Behavior:**  Kernel parameters like `vm.swappiness` control how aggressively the kernel swaps memory pages to disk.  For memory-intensive LLM workloads, you might want to reduce `vm.swappiness` to minimize swapping and keep more data in RAM.
-    ```bash
+    ```
     # Check current swappiness value
     cat /proc/sys/vm/swappiness
 
@@ -735,7 +791,7 @@ This document outlines key techniques for optimizing the performance and efficie
 * **For NVMe Offloading, Consider High-Performance File Systems (XFS) and I/O Scheduling Optimization:** If offloading to NVMe SSDs, choose a high-performance file system like XFS, which is known for its scalability and performance. Optimize I/O scheduling settings (e.g., using `ionice`) to prioritize LLM data access and minimize interference from other system processes.
 * **Explore Libraries like cuBLASXt for Asynchronous Data Movement:**  Libraries like cuBLASXt (CUDA Basic Linear Algebra Subprograms eXtensions) offer advanced features for asynchronous data movement and computation overlapping, which can be beneficial for optimizing offloading strategies. Investigate if cuBLASXt or similar libraries can be integrated into your offloading implementation.
 * **Monitor Disk I/O with `iostat`:** When using NVMe offloading, monitor disk I/O performance using `iostat` to ensure that disk access is not becoming a bottleneck. High disk utilization or long wait times can indicate I/O limitations.
-    ```bash
+    ```
     iostat -xz 1  # Monitor disk I/O statistics every 1 second
     ```
     Pay attention to metrics like `%util` (disk utilization) and `await` (average wait time for I/O requests).
