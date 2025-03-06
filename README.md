@@ -17,8 +17,7 @@ These techniques aim to maximize performance for running Large Language Models (
 1.  **Memory Optimization Techniques**
 
     a.  **Quantization: Reducing Model Size**
-
-        *   **Concept:** Quantization reduces the precision of model weights and activations, dramatically decreasing memory usage and often speeding up computation.
+**Concept:** Quantization reduces the precision of model weights and activations, dramatically decreasing memory usage and often speeding up computation.
         *   **Why it Works:** Lower precision means fewer bits per parameter, allowing larger models to fit in VRAM. Lower precision also often leads to faster computations, especially on hardware optimized for lower precision arithmetic (like INT8).
         *   **Techniques:**
             *   **GPTQ/ExLlamaV2:** Fastest inference, excellent compression, especially with NVIDIA GPUs.
