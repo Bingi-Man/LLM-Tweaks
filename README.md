@@ -213,7 +213,7 @@
 ## **1: Introduction - Optimizing LLMs on Linux**
 
 
-**1.1 Welcome and Purpose of the Guide**
+### **1.1 Welcome and Purpose of the Guide**
 
 
 Welcome to this revised guide on advanced optimization techniques for running Large Language Models (LLMs) on Linux systems. This guide is designed for developers and researchers who want to leverage the power of LLMs even on systems with limited resources.  This version 1.1 includes step-by-step recipes, troubleshooting tips, and more detailed hardware recommendations based on user feedback.
