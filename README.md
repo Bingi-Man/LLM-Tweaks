@@ -454,7 +454,328 @@ For the purpose of running LLMs on resource-constrained Linux systems, we will p
 
 
 ---
+ExLlamaV2 Procedures Manual: Model Conversion and Evaluation
 
+
+This manual outlines the procedures for converting models to the EXL2
+ format and evaluating them using the provided ExLlamaV2 scripts, based 
+on the documentation provided.
+
+
+1. Prerequisites:
+
+
+Before you begin, ensure you have the following:
+
+
+Hardware:
+
+Sufficient RAM:  At least 16GB for 7B models, and 64GB for 70B models (or larger).
+NVIDIA GPU with sufficient VRAM: At least 8GB for 
+7B models, and 24GB for 70B models (or larger). Mixtral 8x7B requires 
+approximately 20GB of VRAM.  Ampere, Ada Lovelace, or newer 
+architectures (RTX 3000/4000 series and later) are recommended for 
+optimal performance with ExLlamaV2.
+
+
+Software:
+
+Python Environment: Python 3.x is required. It's recommended to use a virtual environment to manage dependencies.
+Required Python Packages: Install the necessary packages using pip:
+
+pip install auto-gptq optimum transformers (For general GPTQ related functionalities, might be implicitly needed for EXL2 conversion)
+pip install human-eval (For HumanEval evaluation)
+pip install datasets (For MMLU evaluation)
+
+
+
+
+
+
+2. Model Conversion to EXL2 Format (using convert.py):
+
+
+This section guides you through converting a pre-trained FP16 model (in Hugging Face format) to the EXL2 quantized format.
+
+
+Step 2.1: Prepare your FP16 Model:
+
+
+Ensure you have the source FP16 model in a directory. This directory should contain:
+
+config.json: Model configuration file.
+tokenizer.model: Tokenizer model file.
+One or more .safetensors files: Model weights files (sharded models are supported).
+
+
+
+
+Step 2.2: Choose a Working Directory and Output Directory:
+
+
+Working Directory (-o or --out_dir):
+  Select a directory for temporary files and the initial output. If you 
+interrupt the conversion, you can resume from this directory.
+Output Directory (-cf or --compile_full - Optional):  Choose a directory where you want to save the final quantized model in a complete, ready-to-use format. If -cf is specified, the quantized .safetensors files and all other original model files (except original FP16 .safetensors) will be copied to this directory. If -cf is not specified, the quantized .safetensors files will be saved in the working directory.
+
+
+Step 2.3: Perform the Measurement Pass (Recommended):
+
+
+The measurement pass analyzes the model to determine optimal 
+quantization parameters. It's recommended to perform this pass first, 
+especially if you plan to quantize the same model at different bitrates.
+
+
+
+
+Run the convert.py script with the following arguments:
+
+
+Bash
+
+
+python convert.py \
+
+    -i <path_to_fp16_model_directory> \
+
+    -o <path_to_working_directory> \
+
+    -nr \
+
+    -om <path_to_measurement.json>
+
+
+-i <path_to_fp16_model_directory>: Replace with the path to your FP16 model directory.
+-o <path_to_working_directory>: Replace with the path to your chosen working directory.
+-nr or --no_resume:  Ensures a fresh start, deleting any existing files in the working directory.
+-om <path_to_measurement.json> or --output_measurement <path_to_measurement.json>:  Specifies the path to save the measurement.json file. This file will contain the measurement results.
+
+
+
+
+Wait for the Measurement Pass to Complete: This pass can take a significant amount of time as it effectively quantizes the model multiple times.
+
+
+
+
+Step 2.4: Perform the Quantization Pass:
+
+
+Now, use the measurement results to quantize the model to your desired average bitrate.
+
+
+
+
+Run the convert.py script with the following arguments:
+
+
+Bash
+
+
+python convert.py \
+
+    -i <path_to_fp16_model_directory> \
+
+    -o <path_to_working_directory> \
+
+    -nr \
+
+    -m <path_to_measurement.json> \
+
+    -cf <path_to_output_directory> \
+
+    -b <target_average_bits_per_weight>
+
+
+-i <path_to_fp16_model_directory>: Replace with the path to your FP16 model directory.
+-o <path_to_working_directory>: Replace with the path to your working directory (same as in the measurement pass).
+-nr or --no_resume: Ensures a fresh start.
+-m <path_to_measurement.json> or --measurement <path_to_measurement.json>:  Specifies the path to the measurement.json file generated in the previous step. This skips the measurement pass and uses the existing results.
+-cf <path_to_output_directory> or --compile_full <path_to_output_directory>: Replace with the path to your desired output directory.
+-b <target_average_bits_per_weight> or --bits <target_average_bits_per_weight>: Replace with the target average bits per weight you want to achieve (e.g., 3.0, 4.0, 2.55).
+
+
+
+
+Wait for the Quantization Pass to Complete: This pass will be faster than the measurement pass if you used the -m argument.
+
+
+
+
+Example: Converting Llama 2 7B to EXL2 at 3.0 bits per weight:
+
+
+Assuming your FP16 Llama 2 7B model is in /mnt/models/llama2-7b-fp16/, you want to use /mnt/temp/exl2/ as the working directory, and save the final EXL2 model to /mnt/models/llama2-7b-exl2/3.0bpw/:
+
+
+Measurement Pass:
+
+
+Bash
+
+
+python convert.py \
+
+    -i /mnt/models/llama2-7b-fp16/ \
+
+    -o /mnt/temp/exl2/ \
+
+    -nr \
+
+    -om /mnt/models/llama2-7b-exl2/measurement.json
+
+
+Quantization Pass:
+
+
+Bash
+
+
+python convert.py \
+
+    -i /mnt/models/llama2-7b-fp16/ \
+
+    -o /mnt/temp/exl2/ \
+
+    -nr \
+
+    -m /mnt/models/llama2-7b-exl2/measurement.json \
+
+    -cf /mnt/models/llama2-7b-exl2/3.0bpw/ \
+
+    -b 3.0
+
+
+Step 2.5: Resuming an Interrupted Job:
+
+
+If the conversion process is interrupted, you can resume it by simply running the convert.py script with the working directory specified using -o:
+
+
+Bash
+
+
+python convert.py -o <path_to_working_directory>
+
+
+Important Notes for Conversion:
+
+
+-nr flag: Use -nr when starting a new conversion or if you want to clear the working directory. Omit -nr to resume an existing job.
+-om and -m flags:  Using -om to save the measurement and -m to reuse it is highly recommended for efficiency, especially when experimenting with different bitrates for the same model.
+"Solving..." Step: If the conversion seems to pause
+ at the "Solving..." step, be patient. The script is searching for 
+optimal quantization parameters, which can be computationally intensive.
+MoE Models Warning:  Warnings about "less than 10% 
+calibration" for certain experts in MoE models might appear. These 
+warnings may or may not be critical, and further investigation might be 
+needed for MoE model quantization.
+Calibration Perplexity: After conversion, check the
+ "calibration perplexity (quant)" in the output. A very high perplexity 
+(30+) suggests potential quantization issues, and extremely high values 
+(thousands) indicate a catastrophic failure.
+
+
+3. Model Evaluation:
+
+
+This section describes how to evaluate your EXL2 quantized models using HumanEval and MMLU benchmarks.
+
+
+3.1: HumanEval Evaluation:
+
+
+
+
+Ensure human-eval is installed: pip install human-eval
+
+
+
+
+Run the eval/humaneval.py script:
+
+
+Bash
+
+
+python eval/humaneval.py \
+
+    -m <path_to_exl2_model_directory> \
+
+    -o humaneval_output.json
+
+
+-m <path_to_exl2_model_directory> or --model <path_to_exl2_model_directory>: Replace with the path to your EXL2 model directory (the one created using -cf in the conversion process).
+-o humaneval_output.json or --output humaneval_output.json: Specifies the output JSON file to store generated samples.
+
+
+
+
+
+
+Evaluate Functional Correctness: Use the evaluate-functional-correctness script from the human-eval package:
+
+
+Bash
+
+
+evaluate-functional-correctness humaneval_output.json
+
+
+
+
+Optional HumanEval Arguments:
+
+
+-spt <int> or --samples_per_task <int>:  Number of samples per task (default is 1, more samples for more accurate scores).
+--max_tokens <int>: Maximum tokens to generate per sample (default is 768).
+-pf <str> or --prompt <str>:  Prompt format for instruct-tuned models.
+-v or --verbose: Output completions during generation.
+-cs <int> or --cache_size <int>: Cache size in tokens for batching performance.
+-cq4, -cq6, -cq8: Use Q4, Q6, or Q8 cache respectively.
+
+
+3.2: MMLU Evaluation:
+
+
+
+
+Ensure datasets is installed: pip install datasets
+
+
+
+
+Run the eval/mmlu.py script:
+
+
+Bash
+
+
+python eval/mmlu.py -m <path_to_exl2_model_directory>
+
+
+-m <path_to_exl2_model_directory> or --model <path_to_exl2_model_directory>: Replace with the path to your EXL2 model directory.
+
+
+
+
+Optional MMLU Arguments:
+
+
+-sub <list> or --subjects <list>: Limit evaluation to specific subjects (comma-separated list).
+-fs <int> or --fewshot_examples <int>: Number of few-shot examples (default is 5).
+-shf or --shuffle: Shuffle answer choices.
+-cs <int> or --cache_size <int>: Cache size in tokens.
+-cq4, -cq6, -cq8: Use Q4, Q6, or Q8 cache.
+
+
+4. Troubleshooting:
+
+
+"CUDA out of memory" Errors: Reduce context length (-l in evaluation scripts) or use a smaller model. Ensure no other VRAM-intensive applications are running.
+ModuleNotFoundError: Double-check that you have installed all required Python packages using pip install ....
+Model Loading Errors: Verify that the model directory path (-m) is correct and that the model files are present and not corrupted.
 
 ## **4: GPTQ and ExLlamaV2 - High-Performance Quantization**
 
