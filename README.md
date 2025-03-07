@@ -3,7 +3,11 @@
 
 
 
+
+
+
 #### 1: Introduction - Optimizing LLMs on Linux
+
 
 
 1.1 Welcome and Purpose of the Guide
@@ -19,8 +23,11 @@
 1.6 Understanding Trade-offs (Speed, Memory, Accuracy)
 
 
+
+
     
 #### 2: Understanding Memory Constraints for LLMs
+
 
 
 2.1 VRAM (Video RAM) vs. System RAM
