@@ -1,7 +1,7 @@
-Advanced Optimization Techniques for Linux Systems: Running Large Language Models (LLMs) - Revised Procedures Guide - Version 1.1 
+# Advanced Optimization Techniques for Linux Systems: Running Large Language Models (LLMs) - Revised Procedures Guide - Version 1.1 
 
 
-Table of Contents:
+- Table of Contents:
 
 
 1: Introduction - Optimizing LLMs on Linux
