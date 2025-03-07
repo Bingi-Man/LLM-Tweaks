@@ -6,184 +6,205 @@
 
 1: Introduction - Optimizing LLMs on Linux
 
-    1.1 Welcome and Purpose of the Guide
 
-    1.2 Target Audience and Skill Level
+1.1 Welcome and Purpose of the Guide
 
-    1.3 Defining "Resource-Constrained" Systems
+1.2 Target Audience and Skill Level
 
-    1.4 Importance of Optimization on Linux
+1.3 Defining "Resource-Constrained" Systems
 
-    1.5 Overview of Optimization Techniques Covered
+1.4 Importance of Optimization on Linux
 
-    1.6 Understanding Trade-offs (Speed, Memory, Accuracy)
+1.5 Overview of Optimization Techniques Covered
+
+1.6 Understanding Trade-offs (Speed, Memory, Accuracy)
 
 
+    
 2: Understanding Memory Constraints for LLMs
 
-    2.1 VRAM (Video RAM) vs. System RAM
 
-    2.2 Importance of VRAM for LLM Inference
+2.1 VRAM (Video RAM) vs. System RAM
 
-    2.3 Factors Affecting Memory Usage: Model Size, Precision, Context Length
+2.2 Importance of VRAM for LLM Inference
 
-    2.4 Monitoring Memory Usage on Linux (e.g., nvidia-smi, free -m)
+2.3 Factors Affecting Memory Usage: Model Size, Precision, Context Length
+
+2.4 Monitoring Memory Usage on Linux (e.g., nvidia-smi, free -m)
 
 
+    
 3: Quantization Techniques - Reducing Model Footprint
 
-    3.1 Introduction to Quantization
 
-    3.2 Why Quantization Works (Reduced Precision, Smaller Model Size)
+3.1 Introduction to Quantization
 
-    3.3 Types of Quantization: Post-Training Quantization (PTQ), Quantization-Aware Training (QAT)
+3.2 Why Quantization Works (Reduced Precision, Smaller Model Size)
 
-    3.4 Focus on PTQ for Inference Optimization
+3.3 Types of Quantization: Post-Training Quantization (PTQ), Quantization-Aware Training (QAT)
+
+3.4 Focus on PTQ for Inference Optimization
 
 
+    
 4: GPTQ and ExLlamaV2 - High-Performance Quantization
 
-    4.1 Introduction to GPTQ (Generative Post-training Quantization)
 
-    4.2 ExLlamaV2 Library for Fast GPTQ Inference
+4.1 Introduction to GPTQ (Generative Post-training Quantization)
 
-    4.3 Advantages of GPTQ: Speed, Compression, NVIDIA GPU Optimization
+4.2 ExLlamaV2 Library for Fast GPTQ Inference
 
-    4.4 Trade-offs: Potential Accuracy Loss
+4.3 Advantages of GPTQ: Speed, Compression, NVIDIA GPU Optimization
 
-    4.5 Recipe: Running GPTQ Quantized Models with ExLlamaV2 - Step-by-Step
+4.4 Trade-offs: Potential Accuracy Loss
 
-    4.6 Troubleshooting GPTQ Loading: Common Errors and Solutions
+4.5 Recipe: Running GPTQ Quantized Models with ExLlamaV2 - Step-by-Step
 
-    4.7 Practical Example with AutoGPTQ and Transformers (Python Code)
+4.6 Troubleshooting GPTQ Loading: Common Errors and Solutions
+
+4.7 Practical Example with AutoGPTQ and Transformers (Python Code)
 
 
+    
 5: GGML/GGUF and llama.cpp - CPU and Cross-Platform Efficiency
 
-    5.1 Introduction to GGML/GGUF Model Format
 
-    5.2 llama.cpp Library: CPU-Optimized Inference
+5.1 Introduction to GGML/GGUF Model Format
 
-    5.3 Versatility: CPU and GPU Support, Various Quantization Levels
+5.2 llama.cpp Library: CPU-Optimized Inference
 
-    5.4 Cross-Platform Compatibility (Linux, macOS, Windows)
+5.3 Versatility: CPU and GPU Support, Various Quantization Levels
 
-    5.5 Recipe: Running GGUF Models with llama.cpp - Step-by-Step
+5.4 Cross-Platform Compatibility (Linux, macOS, Windows)
 
-    5.6 Troubleshooting llama.cpp Build Issues: Common Compiler Errors and Dependencies
+5.5 Recipe: Running GGUF Models with llama.cpp - Step-by-Step
 
-    5.7 Practical Example: Building llama.cpp and Running Inference (Bash Commands)
+5.6 Troubleshooting llama.cpp Build Issues: Common Compiler Errors and Dependencies
+
+5.7 Practical Example: Building llama.cpp and Running Inference (Bash Commands)
 
 
+    
 6: Bitsandbytes - Easy Quantization in Transformers
 
-    6.1 Introduction to Bitsandbytes Library
 
-    6.2 Ease of Integration with Hugging Face Transformers
+6.1 Introduction to Bitsandbytes Library
 
-    6.3 Support for 4-bit and 8-bit Quantization
+6.2 Ease of Integration with Hugging Face Transformers
 
-    6.4 Mixed-Precision Strategies
+6.3 Support for 4-bit and 8-bit Quantization
 
-    6.5 Use Cases: Quick Experimentation, Python Workflows, Memory-Efficient Training
+6.4 Mixed-Precision Strategies
 
-    6.6 Recipe: Loading a 4-bit Quantized Model with Bitsandbytes - Step-by-Step
+6.5 Use Cases: Quick Experimentation, Python Workflows, Memory-Efficient Training
 
-    6.7 Practical Example: Loading a 4-bit Quantized Model with Transformers (Python Code)
+6.6 Recipe: Loading a 4-bit Quantized Model with Bitsandbytes - Step-by-Step
+
+6.7 Practical Example: Loading a 4-bit Quantized Model with Transformers (Python Code)
 
 
+    
 7: Model Selection - Choosing Efficient LLM Architectures
 
-    7.1 Importance of Model Architecture for Efficiency
 
-    7.2 Choosing Smaller Models vs. Larger Models
+7.1 Importance of Model Architecture for Efficiency
 
-    7.3 Distilled/Optimized Models (e.g., MobileBERT, DistilBERT, Smaller LLM Variants)
+7.2 Choosing Smaller Models vs. Larger Models
 
-    7.4 Tokenizer Efficiency (SentencePiece, Tiktoken, BPE)
+7.3 Distilled/Optimized Models (e.g., MobileBERT, DistilBERT, Smaller LLM Variants)
 
-    7.5 Specific Model Recommendations for Resource-Constrained Systems
+7.4 Tokenizer Efficiency (SentencePiece, Tiktoken, BPE)
 
-    7.6 Using Hugging Face Hub Filters to Find Efficient Models
+7.5 Specific Model Recommendations for Resource-Constrained Systems
 
-    7.7 Model Selection Criteria Beyond Size: Task Suitability and Architecture
+7.6 Using Hugging Face Hub Filters to Find Efficient Models
+
+7.7 Model Selection Criteria Beyond Size: Task Suitability and Architecture
 
 
+    
 8: Offloading to System RAM and NVMe - Expanding Memory Capacity
 
-    8.1 Concept of Model Offloading
 
-    8.2 VRAM Overflow and Necessity of Offloading
+8.1 Concept of Model Offloading
 
-    8.3 Offloading to System RAM: Speed Trade-off
+8.2 VRAM Overflow and Necessity of Offloading
 
-    8.4 Offloading to NVMe SSD: Better Performance than HDD, Still Slower than VRAM
+8.3 Offloading to System RAM: Speed Trade-off
 
-    8.5 Recipe: Model Offloading with `accelerate` - Step-by-Step
+8.4 Offloading to NVMe SSD: Better Performance than HDD, Still Slower than VRAM
 
-    8.6 Monitoring I/O Performance with iostat
+8.5 Recipe: Model Offloading with `accelerate` - Step-by-Step
 
-    8.7 Using accelerate Library for Model Offloading (Conceptual Example)
+8.6 Monitoring I/O Performance with iostat
+
+8.7 Using accelerate Library for Model Offloading (Conceptual Example)
 
 
+    
 9: Memory Mapping (mmap) for Efficient Model Loading
 
-    9.1 Concept of Memory Mapping (mmap)
 
-    9.2 Benefits of mmap for LLM Loading: Speed, Memory Efficiency
+9.1 Concept of Memory Mapping (mmap)
 
-    9.3 How mmap Works with Model Files (e.g., .safetensors, .gguf)
+9.2 Benefits of mmap for LLM Loading: Speed, Memory Efficiency
 
-    9.4 Practical Considerations: File System Caching, Shared Memory
+9.3 How mmap Works with Model Files (e.g., .safetensors, .gguf)
 
-    9.5 Python Libraries Leveraging mmap (e.g., `safetensors` library)
+9.4 Practical Considerations: File System Caching, Shared Memory
+
+9.5 Python Libraries Leveraging mmap (e.g., `safetensors` library)
 
 
+    
 10: Compilation and Graph Optimization - Speeding Up Inference
 
-    10.1 Just-In-Time (JIT) Compilation for LLMs
 
-    10.2 Graph Optimization Techniques (Operator Fusion, Kernel Optimization)
+10.1 Just-In-Time (JIT) Compilation for LLMs
 
-    10.3 Libraries for Compilation and Optimization (e.g., TorchScript, ONNX Runtime, TensorRT, DeepSpeed)
+10.2 Graph Optimization Techniques (Operator Fusion, Kernel Optimization)
 
-    10.4 Trade-offs: Compilation Time vs. Inference Speedup, Hardware Compatibility
+10.3 Libraries for Compilation and Optimization (e.g., TorchScript, ONNX Runtime, TensorRT, DeepSpeed)
 
-    10.5 Conceptual Examples and Tools
+10.4 Trade-offs: Compilation Time vs. Inference Speedup, Hardware Compatibility
 
-    10.6 TorchScript Example (PyTorch Code)
+10.5 Conceptual Examples and Tools
+
+10.6 TorchScript Example (PyTorch Code)
 
 
+    
 11: Hardware Acceleration - Leveraging GPUs and Specialized Hardware
 
-    11.1 Benefits of GPUs for LLM Inference
 
-    11.2 NVIDIA GPUs and CUDA
+11.1 Benefits of GPUs for LLM Inference
 
-    11.3 AMD GPUs and ROCm
+11.2 NVIDIA GPUs and CUDA
 
-    11.4 Apple Silicon GPUs and Metal
+11.3 AMD GPUs and ROCm
 
-    11.5 CPUs with Vector Extensions (AVX-512, AVX2)
+11.4 Apple Silicon GPUs and Metal
 
-    11.6 Specialized AI Accelerators (Conceptual Overview - TPUs, Inferentia, etc.)
+11.5 CPUs with Vector Extensions (AVX-512, AVX2)
 
-    11.7 Choosing the Right Hardware for Your Budget and Performance Needs - Specific Recommendations
+11.6 Specialized AI Accelerators (Conceptual Overview - TPUs, Inferentia, etc.)
+
+11.7 Choosing the Right Hardware for Your Budget and Performance Needs - Specific Recommendations
 
 
+    
 12: Conclusion - Summary and Future Directions
 
-    12.1 Recap of Optimization Techniques Covered
 
-    12.2 Key Takeaways and Best Practices
+12.1 Recap of Optimization Techniques Covered
 
-    12.3 Future Trends in LLM Optimization
+12.2 Key Takeaways and Best Practices
 
-    12.4 Community Resources and Further Learning
+12.3 Future Trends in LLM Optimization
 
-    12.5 Final Words
+12.4 Community Resources and Further Learning
 
-
+12.5 Final Words
 
 
 ## **1: Introduction - Optimizing LLMs on Linux**
