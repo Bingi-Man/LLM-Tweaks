@@ -1,4 +1,4 @@
-Advanced Optimization Techniques for Linux Systems: Running Large Language Models (LLMs) - Revised Procedures Guide
+# Advanced Optimization Techniques for Linux Systems: Running Large Language Models (LLMs) - Revised Procedures Guide
 
 Target Audience: Developers and researchers who want to run LLMs on Linux systems with limited resources, such as laptops, desktops with consumer GPUs, or cloud instances with constrained memory and compute.
 
@@ -6,7 +6,7 @@ Resource-Constrained Systems Definition: Systems with limited VRAM (e.g., < 24GB
 
 Important Note on Trade-offs: Optimization often involves trade-offs. Techniques that reduce memory usage or increase speed might sometimes slightly impact model accuracy. This guide will help you understand these trade-offs and make informed decisions for your specific use case.
 
-Chapter 1: Introduction - Optimizing LLMs on Linux
+## Chapter 1: Introduction - Optimizing LLMs on Linux
 
     Topics:
         Welcome and Purpose of the Guide
@@ -445,13 +445,7 @@ Chapter 8: Offloading to System RAM and NVMe - Expanding Memory Capacity
 
     Content:
 
-    When the GPU's VRAM is insufficient to hold the entire LLM, model offloading becomes a crucial technique. Offloading involves moving parts of the model (typically layers) from VRAM to slower memory tiers, such as system RAM or even NVMe solid-state drives (SSDs). This technique allows running larger models than would otherwise fit in VRAM, but it comes at the cost of/
-
-continue
-🤖
-Workflow Process
-
-reduced inference speed.
+    When the GPU's VRAM is insufficient to hold the entire LLM, model offloading becomes a crucial technique. Offloading involves moving parts of the model (typically layers) from VRAM to slower memory tiers, such as system RAM or even NVMe solid-state drives (SSDs). This technique allows running larger models than would otherwise fit in VRAM, but it comes at the cost of reduced inference speed.
 
 VRAM Overflow and Necessity of Offloading:
 
