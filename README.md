@@ -1,6 +1,6 @@
 # Advanced Optimization Techniques for Linux Systems: Running Large Language Models (LLMs) - Revised Procedures Guide - Version 1.1 
 
-  
+.
 
 ## 1: Introduction - Optimizing LLMs on Linux
 
@@ -34,7 +34,7 @@
 
 2.4 Monitoring Memory Usage on Linux (e.g., nvidia-smi, free -m)
 
-
+.
     
 #### 3: Quantization Techniques - Reducing Model Footprint
 
@@ -47,7 +47,7 @@
 
 3.4 Focus on PTQ for Inference Optimization
 
-
+.
     
 #### 4: GPTQ and ExLlamaV2 - High-Performance Quantization
 
@@ -66,7 +66,7 @@
 
 4.7 Practical Example with AutoGPTQ and Transformers (Python Code)
 
-
+.
     
 #### 5: GGML/GGUF and llama.cpp - CPU and Cross-Platform Efficiency
 
@@ -85,7 +85,7 @@
 
 5.7 Practical Example: Building llama.cpp and Running Inference (Bash Commands)
 
-
+.
     
 #### 6: Bitsandbytes - Easy Quantization in Transformers
 
@@ -104,7 +104,7 @@
 
 6.7 Practical Example: Loading a 4-bit Quantized Model with Transformers (Python Code)
 
-
+.
     
 #### 7: Model Selection - Choosing Efficient LLM Architectures
 
@@ -123,7 +123,7 @@
 
 7.7 Model Selection Criteria Beyond Size: Task Suitability and Architecture
 
-
+.
     
 #### 8: Offloading to System RAM and NVMe - Expanding Memory Capacity
 
@@ -142,7 +142,7 @@
 
 8.7 Using accelerate Library for Model Offloading (Conceptual Example)
 
-
+.
     
 #### 9: Memory Mapping (mmap) for Efficient Model Loading
 
@@ -157,7 +157,7 @@
 
 9.5 Python Libraries Leveraging mmap (e.g., `safetensors` library)
 
-
+.
     
 #### 10: Compilation and Graph Optimization - Speeding Up Inference
 
@@ -174,7 +174,7 @@
 
 10.6 TorchScript Example (PyTorch Code)
 
-
+.
     
 #### 11: Hardware Acceleration - Leveraging GPUs and Specialized Hardware
 
@@ -193,7 +193,7 @@
 
 11.7 Choosing the Right Hardware for Your Budget and Performance Needs - Specific Recommendations
 
-
+.
     
 #### 12: Conclusion - Summary and Future Directions
 
@@ -208,6 +208,7 @@
 
 12.5 Final Words
 
+.
 
 ## **1: Introduction - Optimizing LLMs on Linux**
 
