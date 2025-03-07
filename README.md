@@ -6,7 +6,7 @@ Resource-Constrained Systems Definition: Systems with limited VRAM (e.g., < 24GB
 
 Important Note on Trade-offs: Optimization often involves trade-offs. Techniques that reduce memory usage or increase speed might sometimes slightly impact model accuracy. This guide will help you understand these trade-offs and make informed decisions for your specific use case.
 
-## Chapter 1: Introduction - Optimizing LLMs on Linux
+## 1: Introduction - Optimizing LLMs on Linux
 
     Topics:
         Welcome and Purpose of the Guide
@@ -26,7 +26,7 @@ Important Note on Trade-offs: Optimization often involves trade-offs. Techniques
 
     It's crucial to remember that optimization often involves trade-offs. Techniques that save memory or boost speed might sometimes slightly affect the model's accuracy. This guide will highlight these trade-offs, empowering you to make informed choices tailored to your specific needs and priorities. We will cover techniques to optimize for both memory footprint and computational speed, enabling you to run impressive LLMs even on modest hardware. Let's begin our journey into the world of LLM optimization on Linux!
 
-Chapter 2: Understanding Memory Constraints for LLMs
+## 2: Understanding Memory Constraints for LLMs
 
     Topics:
         VRAM (Video RAM) vs. System RAM
@@ -57,7 +57,7 @@ Chapter 2: Understanding Memory Constraints for LLMs
 
     Understanding these memory constraints is the first step towards effective optimization. In the following chapters, we will explore techniques to reduce memory usage and improve performance within these limitations.
 
-Chapter 3: Quantization Techniques - Reducing Model Footprint
+## 3: Quantization Techniques - Reducing Model Footprint
 
     Topics:
         Introduction to Quantization
@@ -85,7 +85,7 @@ Chapter 3: Quantization Techniques - Reducing Model Footprint
 
     For the purpose of running LLMs on resource-constrained Linux systems, we will primarily focus on Post-Training Quantization (PTQ) techniques. PTQ offers a good balance of ease of use, memory savings, and inference speed improvements without requiring model retraining. In the following chapters, we will explore specific PTQ methods like GPTQ, GGML/GGUF, and bitsandbytes in detail.
 
-Chapter 4: GPTQ and ExLlamaV2 - High-Performance Quantization
+## 4: GPTQ and ExLlamaV2 - High-Performance Quantization
 
     Topics:
         Introduction to GPTQ (Generative Post-training Quantization)
@@ -118,11 +118,11 @@ Chapter 4: GPTQ and ExLlamaV2 - High-Performance Quantization
 
     Python
 
-# Install AutoGPTQ (if you haven't already)
+- Install AutoGPTQ (if you haven't already)
 
-# pip install auto-gptq
+pip install auto-gptq
 
-# pip install optimum  # For safetensors support
+pip install optimum  # For safetensors support
 
 
 from auto_gptq import AutoGPTQForCausalLM
@@ -139,12 +139,12 @@ model_name_or_path = "TheBloke/TinyLlama-1.1B-Chat-v1.0-GPTQ"  # Replace with yo
 model_basename = "gptq_model-4bit-128g" # Replace with your model's base name (check Hugging Face Hub model card)
 
 
-# Load the tokenizer
+- Load the tokenizer
 
 tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, use_fast=True)
 
 
-# Load the quantized model
+- Load the quantized model
 
 model = AutoGPTQForCausalLM.from_quantized(
 
@@ -165,17 +165,17 @@ model = AutoGPTQForCausalLM.from_quantized(
 )
 
 
-# Example prompt
+- Example prompt
 
 prompt = "Write a short story about a cat who learns to code."
 
 
-# Tokenize the prompt
+- Tokenize the prompt
 
 inputs = tokenizer(prompt, return_tensors="pt").to("cuda:0") # Move input tensors to GPU if model is on GPU
 
 
-# Generate text
+- Generate text
 
 with torch.no_grad(): # Disable gradient calculation for inference
 
@@ -196,14 +196,14 @@ with torch.no_grad(): # Disable gradient calculation for inference
     )
 
 
-# Decode the output
+- Decode the output
 
 generated_text = tokenizer.decode(generation_output[0])
 
 print(generated_text)
 
 
-# Print model size
+- Print model size
 
 print(f"Number of parameters: {model.num_parameters()}")
 
@@ -216,7 +216,7 @@ model_size_mb = os.path.getsize(os.path.join(model_name_or_path, model_basename 
 
     GPTQ with ExLlamaV2 is an excellent choice when you need high inference speed and significant memory reduction, especially on NVIDIA GPUs.
 
-Chapter 5: GGML/GGUF and llama.cpp - CPU and Cross-Platform Efficiency
+## 5: GGML/GGUF and llama.cpp - CPU and Cross-Platform Efficiency
 
     Topics:
         Introduction to GGML/GGUF Model Format
@@ -265,19 +265,19 @@ Practical Example (llama.cpp with GGUF):
 
 make # For CPU only (Default CPU build with OpenBLAS)
 
-# If you have an NVIDIA GPU, add the following flags (adjust for your CUDA version):
+#### If you have an NVIDIA GPU, add the following flags (adjust for your CUDA version):
 
-# make LLAMA_CUDA=1 CUDA_DIR=/usr/local/cuda # For NVIDIA GPUs using cuBLAS. Ensure CUDA is installed. CUDA_DIR typically is /usr/local/cuda or /usr/cuda. Check 'nvcc --version' to confirm CUDA installation.
+- make LLAMA_CUDA=1 CUDA_DIR=/usr/local/cuda # For NVIDIA GPUs using cuBLAS. Ensure CUDA is installed. CUDA_DIR typically is /usr/local/cuda or /usr/cuda. Check 'nvcc --version' to confirm CUDA installation.
 
-# (Optional) AMD GPU (ROCm):
+- (Optional) AMD GPU (ROCm):
 
-# make LLAMA_HIP=1 HIP_DIR=/opt/rocm # For AMD GPUs using ROCm. Ensure ROCm is installed. HIP_DIR is often /opt/rocm. Check 'hipcc --version' to confirm ROCm installation.
+make LLAMA_HIP=1 HIP_DIR=/opt/rocm # For AMD GPUs using ROCm. Ensure ROCm is installed. HIP_DIR is often /opt/rocm. Check 'hipcc --version' to confirm ROCm installation.
 
-# (Optional) macOS Metal:
+- (Optional) macOS Metal:
 
-# make LLAMA_METAL=1 # For macOS with Apple Silicon GPUs using Metal.
+make LLAMA_METAL=1 # For macOS with Apple Silicon GPUs using Metal.
 
-Download a GGUF model: (e.g., TinyLlama-1.1B-Chat-v1.0-Q4_K_M)
+- Download a GGUF model: (e.g., TinyLlama-1.1B-Chat-v1.0-Q4_K_M)
 
 Bash
 
@@ -305,7 +305,7 @@ Bash
 
     llama.cpp and GGUF models are excellent for running LLMs efficiently on CPUs and offer great versatility across different platforms and hardware configurations.
 
-Chapter 6: Bitsandbytes - Easy Quantization in Transformers
+## Chapter 6: Bitsandbytes - Easy Quantization in Transformers
 
     Topics:
         Introduction to Bitsandbytes Library
@@ -345,34 +345,34 @@ import torch
 model_id = "facebook/opt-350m" # Replace with your model ID from Hugging Face Hub
 
 
-# Load tokenizer (standard transformers way)
+- Load tokenizer (standard transformers way)
 
 tokenizer = AutoTokenizer.from_pretrained(model_id)
 
 
-# Load model in 4-bit using bitsandbytes
+- Load model in 4-bit using bitsandbytes
 
 model_4bit = AutoModelForCausalLM.from_pretrained(model_id, device_map='auto', load_in_4bit=True, torch_dtype=torch.float16) # Load in 4-bit with float16 for mixed-precision operations
 
 
-# Example prompt
+- Example prompt
 
 prompt = "Write a poem about the Linux operating system."
 
 
-# Tokenize the prompt
+- Tokenize the prompt
 
 inputs = tokenizer(prompt, return_tensors="pt").to("cuda:0") # Move inputs to GPU
 
 
-# Generate text
+- Generate text
 
 with torch.no_grad():
 
     outputs = model_4bit.generate(**inputs, max_new_tokens=50)
 
 
-# Decode and print output
+- Decode and print output
 
 generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
@@ -385,7 +385,7 @@ generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
     Bitsandbytes provides a user-friendly way to apply quantization within the transformers ecosystem, making it a valuable tool for memory optimization in Python-based LLM projects.
 
-Chapter 7: Model Selection - Choosing Efficient LLM Architectures
+## Chapter 7: Model Selection - Choosing Efficient LLM Architectures
 
     Topics:
         Importance of Model Architecture for Efficiency
@@ -433,7 +433,7 @@ Chapter 7: Model Selection - Choosing Efficient LLM Architectures
 
     Choosing the right model architecture and size is a fundamental step in optimizing LLMs for resource-limited environments.
 
-Chapter 8: Offloading to System RAM and NVMe - Expanding Memory Capacity
+## Chapter 8: Offloading to System RAM and NVMe - Expanding Memory Capacity
 
     Topics:
         Concept of Model Offloading
@@ -451,15 +451,15 @@ VRAM Overflow and Necessity of Offloading:
 
 When you attempt to load and run an LLM that exceeds your GPU's VRAM capacity, you will encounter "out-of-memory" (OOM) errors. Offloading provides a way to circumvent this limitation by utilizing system RAM or NVMe storage as an extension of VRAM.
 
-Offloading to System RAM: Speed Trade-off:
+- Offloading to System RAM: Speed Trade-off:
 
 Offloading model layers to system RAM is a common approach. System RAM is significantly slower than VRAM in terms of bandwidth and latency. Accessing data from system RAM is much slower than accessing data directly from VRAM. Therefore, offloading to system RAM will inevitably slow down inference speed. The more layers you offload to RAM, the greater the performance degradation will be. However, it allows you to run models that would otherwise be impossible to load due to VRAM constraints.
 
-Offloading to NVMe SSD: Better Performance than HDD, Still Slower than VRAM:
+- Offloading to NVMe SSD: Better Performance than HDD, Still Slower than VRAM:
 
 For even larger models that might exceed both VRAM and system RAM capacity (or when system RAM is also limited), you can consider offloading to NVMe solid-state drives (SSDs). NVMe drives are much faster than traditional SATA SSDs and significantly faster than HDDs (Hard Disk Drives). The NVMe drive, due to its significantly faster speed (typically 5-10x faster than SATA SSDs and much faster than HDDs), is preferable to HDD for offloading. However, even NVMe offloading will be slower than keeping everything in VRAM. Accessing data from NVMe is still slower than accessing data from system RAM, which is in turn slower than VRAM. Offloading to NVMe should be considered as a last resort when VRAM and system RAM offloading are insufficient, accepting a further performance penalty for the ability to run very large models.
 
-Using accelerate Library for Model Offloading (Conceptual Example):
+- Using accelerate Library for Model Offloading (Conceptual Example):
 
 The accelerate library from Hugging Face simplifies the process of model offloading. It provides tools to automatically distribute model layers across available devices (GPUs and CPU/RAM) and manage data movement.
 
@@ -475,7 +475,7 @@ model_id = "TheBloke/TinyLlama-1.1B-Chat-v1.0-GPTQ" # Replace with your model ID
 model = AutoModelForCausalLM.from_pretrained(model_id, device_map='auto') # 'auto' automatically decides device mapping
 
 
-# OR, for more control:
+- OR, for more control:
 
 device_map = infer_auto_device_map(model, max_memory={0: "10GB", "cpu": "32GB"}) # Limit GPU 0 memory to 10GB, allow up to 32GB system RAM
 
@@ -486,18 +486,18 @@ model = dispatch_model(model) # Dispatch model to devices according to device_ma
 
 print(model.device_map) # Print the device map to see layer placement
 
-Explanation:
+- Explanation:
 
     device_map='auto': When you load a model with device_map='auto', accelerate attempts to automatically distribute the model across available GPUs and CPU RAM. It tries to maximize GPU utilization while staying within memory limits.
     infer_auto_device_map: For more fine-grained control, you can use infer_auto_device_map. This function allows you to specify memory limits for each device. In the example, max_memory={0: "10GB", "cpu": "32GB"} sets a limit of 10GB VRAM for GPU 0 and allows up to 32GB of system RAM to be used for offloading.
     dispatch_model: After defining the device_map, dispatch_model(model) physically moves the model's layers to the assigned devices according to the map.
     model.device_map: The model.device_map attribute is a dictionary that shows how the layers of your model have been distributed across devices (e.g., {'transformer.h.0': 'cuda:0', 'transformer.h.1': 'cpu', ...}). This is useful for understanding how offloading is working.
 
-Monitoring I/O Performance with iostat:
+- Monitoring I/O Performance with iostat:
 
 When offloading to NVMe, it's important to monitor the I/O performance of your NVMe drive to ensure it's not becoming a bottleneck. The iostat (Input/Output statistics) command in Linux is a valuable tool for this.
 
-Use the command iostat -xz 1 in your terminal while running inference.
+- Use the command iostat -xz 1 in your terminal while running inference.
 
     iostat: The base command for I/O statistics.
     -x: Displays extended statistics, providing more detailed information.
@@ -508,7 +508,7 @@ Look at the output, especially the %util (disk utilization) and await (average w
 
 Offloading is a powerful technique to overcome VRAM limitations, but it's essential to be aware of the performance trade-offs and monitor system performance to ensure it remains effective for your use case.
 
-Chapter 9: Memory Mapping (mmap) for Efficient Model Loading
+## Chapter 9: Memory Mapping (mmap) for Efficient Model Loading
 
     Topics:
         Concept of Memory Mapping (mmap)
@@ -557,7 +557,7 @@ Chapter 9: Memory Mapping (mmap) for Efficient Model Loading
 
     mmap can be a valuable optimization technique for memory management, but it's crucial to monitor I/O performance and ensure it's actually improving performance in your specific use case. If you observe high %iowait or performance degradation, mmap might not be the right approach, and traditional file loading might be more efficient.
 
-Chapter 10: Gradient/Activation Checkpointing - Memory Optimization for Training
+## Chapter 10: Gradient/Activation Checkpointing - Memory Optimization for Training
 
     Topics:
         Introduction to Gradient/Activation Checkpointing
@@ -591,7 +591,7 @@ import torch
 from torch.utils.checkpoint import checkpoint
 
 
-# Example weights and biases (replace with your actual model parameters)
+- Example weights and biases (replace with your actual model parameters)
 
 weight1 = torch.randn(10, 20, requires_grad=True)
 
@@ -618,7 +618,7 @@ def forward_pass(x): # Example forward pass function
     return x_checkpointed
 
 
-# Example input data and target (replace with your actual data)
+- Example input data and target (replace with your actual data)
 
 input_data = torch.randn(1, 20)
 
@@ -629,7 +629,7 @@ loss_function = torch.nn.MSELoss()
 optimizer = torch.optim.SGD([weight1, bias1, weight2, bias2], lr=0.01)
 
 
-# Training loop (simplified example)
+- Training loop (simplified example)
 
 optimizer.zero_grad()
 
@@ -656,7 +656,7 @@ optimizer.step()
 
     Gradient checkpointing is a powerful technique for training larger LLMs within memory constraints, but it's important to be aware of the trade-off with training time and use it strategically.
 
-Chapter 11: Paged Attention - Efficient Memory Management for Inference
+## Chapter 11: Paged Attention - Efficient Memory Management for Inference
 
     Topics:
         Introduction to Paged Attention
@@ -699,7 +699,7 @@ Chapter 11: Paged Attention - Efficient Memory Management for Inference
 
     Python
 
-# Example (Conceptual - not real code, for illustration only)
+- Example (Conceptual - not real code, for illustration only)
 
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -711,14 +711,14 @@ model_id = "TheBloke/TinyLlama-1.1B-Chat-v1.0-GPTQ"
 tokenizer = AutoTokenizer.from_pretrained(model_id)
 
 
-# Initialize an empty model
+- Initialize an empty model
 
 with init_empty_weights():
 
     model = AutoModelForCausalLM.from_pretrained(model_id, trust_remote_code=True)
 
 
-# Load the model with paged attention (conceptual parameter)
+- Load the model with paged attention (conceptual parameter)
 
 model = load_checkpoint_and_dispatch(
 
@@ -738,7 +738,7 @@ model = load_checkpoint_and_dispatch(
 
     Paged attention is a significant advancement in memory management for LLM inference, especially for handling concurrent requests and longer sequences efficiently. As libraries like vllm and Hugging Face Transformers continue to integrate paged attention, it will become an increasingly important technique for optimizing LLM performance on resource-constrained systems.
 
-Chapter 12: Compute Optimization - Hardware Acceleration and BLAS Libraries
+## Chapter 12: Compute Optimization - Hardware Acceleration and BLAS Libraries
 
     Topics:
         Importance of Hardware Acceleration for LLM Inference
@@ -848,7 +848,7 @@ export OPENBLAS_NUM_THREADS=$(nproc --all)  # Sets OpenBLAS to use all physical 
 
     Hardware acceleration through GPUs and optimized BLAS libraries is fundamental for achieving high-performance LLM inference. Properly configuring your system and build environment to leverage these resources is a key optimization step.
 
-Chapter 13: Inference Frameworks and Libraries - Choosing the Right Tools
+## Chapter 13: Inference Frameworks and Libraries - Choosing the Right Tools
 
     Topics:
         Overview of Popular LLM Inference Frameworks and Libraries
@@ -881,9 +881,6 @@ Chapter 13: Inference Frameworks and Libraries - Choosing the Right Tools
     Community	Huge	Large	Growing	NVIDIA Ecosystem	Large
     Best For	Research, Prototyping	CPU Inference, Resource-Constrained	High-Throughput GPU Inference	Max NVIDIA GPU Performance	Cross/
 
-continue
-🤖
-Workflow Process
 
 | Best For | Research, Prototyping | CPU Inference, Resource-Constrained | High-Throughput GPU Inference | Max NVIDIA GPU Performance | Cross-Platform Deployment |
 
@@ -911,7 +908,7 @@ Reinforcing Key Takeaways from the Comparison:
 
 By carefully considering these factors and experimenting with different frameworks, you can select the tool that best enables you to run LLMs efficiently and effectively on your Linux systems.
 
-Chapter 14: Benchmarking and Performance Evaluation
+## Chapter 14: Benchmarking and Performance Evaluation
 
     Topics:
         Importance of Benchmarking for Optimization
@@ -963,7 +960,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 
 
-# Load your model and tokenizer (replace with your code)
+- Load your model and tokenizer (replace with your code)
 
 model_id = "TheBloke/TinyLlama-1.1B-Chat-v1.0-GPTQ" # Replace with your model ID
 
@@ -977,7 +974,7 @@ prompt = "Write a short story about a cat who learns to code." # Example prompt
 inputs = tokenizer(prompt, return_tensors="pt").to("cuda") # Move inputs to GPU if using GPU
 
 
-# Run the inference loop multiple times
+- Run the inference loop multiple times
 
 num_runs = 5 # Number of benchmark runs
 
@@ -1005,7 +1002,7 @@ for run_num in range(num_runs):
     print(f"Run {run_num+1}: Tokens per second: {tokens_per_second:.2f}") # Print per-run TPS
 
 
-# Calculate the average
+- Calculate the average
 
 average_tokens_per_second = total_tokens_per_second / num_runs
 
@@ -1022,7 +1019,7 @@ average_tokens_per_second = total_tokens_per_second / num_runs
 
     Rigorous benchmarking is crucial for data-driven optimization. Always measure the impact of your optimization efforts to ensure they are delivering the desired performance improvements.
 
-Chapter 15: Conclusion - Best Practices and Further Optimization
+## Chapter 15: Conclusion - Best Practices and Further Optimization
 
     Topics:
         Summary of Key Optimization Techniques Covered
