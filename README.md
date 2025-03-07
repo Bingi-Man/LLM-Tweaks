@@ -6,7 +6,7 @@
 
 
 
-#### 1: Introduction - Optimizing LLMs on Linux
+## 1: Introduction - Optimizing LLMs on Linux
 
 
 
