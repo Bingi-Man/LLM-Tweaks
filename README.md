@@ -470,6 +470,185 @@ GPTQ (Generative Post-training Quantization) is a powerful post-training quantiz
 
 ExLlamaV2 is a highly optimized inference library specifically designed to accelerate inference with GPTQ-quantized models, especially on NVIDIA GPUs (Ampere, Ada Lovelace architectures and newer - RTX 3000/4000 series and later). It leverages highly optimized CUDA kernels for fast matrix multiplications and other operations, making GPTQ models run significantly faster than with generic inference libraries.
 
+1. Model Conversion (convert.py) Examples:
+
+
+Example 1: Basic Conversion
+
+
+Bash
+
+
+python convert.py \
+
+    -i /mnt/models/llama2-7b-fp16/ \
+
+    -o /mnt/temp/exl2/ \
+
+    -cf /mnt/models/llama2-7b-exl2/3.0bpw/ \
+
+    -b 3.0
+
+
+Example 2: Measurement Pass Only
+
+
+Bash
+
+
+python convert.py \
+
+    -i /mnt/models/llama2-7b-fp16/ \
+
+    -o /mnt/temp/exl2/ \
+
+    -nr \
+
+    -om /mnt/models/llama2-7b-exl2/measurement.json
+
+
+Example 3: Quantization using Measurement File (Two Bitrates)
+
+
+Bash
+
+
+python convert.py \
+
+    -i /mnt/models/llama2-7b-fp16/ \
+
+    -o /mnt/temp/exl2/ \
+
+    -nr \
+
+    -m /mnt/models/llama2-7b-exl2/measurement.json \
+
+    -cf /mnt/models/llama2-7b-exl2/4.0bpw/ \
+
+    -b 4.0
+
+
+Bash
+
+
+python convert.py \
+
+    -i /mnt/models/llama2-7b-fp16/ \
+
+    -o /mnt/temp/exl2/ \
+
+    -nr \
+
+    -m /mnt/models/llama2-7b-exl2/measurement.json \
+
+    -cf /mnt/models/llama2-7b-exl2/4.5bpw/ \
+
+    -b 4.5
+
+
+Example 4: Resuming a Job
+
+
+Bash
+
+
+python convert.py -o /mnt/temp/exl2/
+
+
+2. HumanEval Evaluation (eval/humaneval.py) Setup and Execution:
+
+
+Installation:
+
+
+Bash
+
+
+pip install human-eval
+
+
+Execution:
+
+
+Bash
+
+
+python eval/humaneval.py -m <model_dir> -o humaneval_output.json
+
+evaluate-functional-correctness humaneval_output.json
+
+
+3. MMLU Evaluation (eval/mmlu.py) Setup and Execution:
+
+
+Installation:
+
+
+Bash
+
+
+pip install datasets
+
+
+Execution:
+
+
+Bash
+
+
+python eval/mmlu.py -m <model_dir>
+
+
+Analysis of the Code Snippets:
+
+
+
+
+convert.py Snippets: These examples demonstrate how to use the convert.py script for EXL2 quantization. They showcase different use cases:
+
+
+Basic conversion:  Converts an FP16 model to EXL2 with a specified bitrate (-b). It also copies original model files to the output directory (-cf).
+Measurement pass:  Runs only the measurement phase of quantization, saving the results to a JSON file (-om). This is useful for reusing measurements for multiple quantization attempts. The -nr flag prevents resuming previous jobs and starts fresh.
+Using measurement file:  Skips the measurement pass and uses a pre-calculated measurement file (-m) for faster quantization, especially when trying different bitrates.
+Resuming a job: Shows how to resume an interrupted conversion job by simply providing the working directory (-o).
+
+
+
+
+eval/humaneval.py Snippets: These show how to run the HumanEval benchmark:
+
+
+pip install human-eval:  Installs the necessary human-eval package.
+python eval/humaneval.py ...: Executes the HumanEval script, specifying the model directory (-m) and output file (-o).
+evaluate-functional-correctness ...:  A separate command (likely from the human-eval package) to evaluate the generated code samples for functional correctness.
+
+
+
+
+eval/mmlu.py Snippets: These show how to run the MMLU benchmark:
+
+
+pip install datasets: Installs the datasets library, required for MMLU.
+python eval/mmlu.py ...: Executes the MMLU script, specifying the model directory (-m).
+
+
+
+
+Key Observations:
+
+
+Python Scripts: All the main tools (convert.py, humaneval.py, mmlu.py) are Python scripts.
+Command-Line Arguments:  The scripts are controlled via command-line arguments, making them flexible and scriptable.
+File Paths:  Many arguments involve file paths (-i, -o, -cf, -om, -m, -o in evaluation scripts), indicating that these tools work with models and data stored in files and directories.
+Bitrate Control: The -b argument in convert.py is central to controlling the target bitrate for EXL2 quantization.
+Evaluation Benchmarks: The documentation provides 
+clear examples of how to evaluate EXLlamaV2 models using standard 
+benchmarks like HumanEval and MMLU.
+Installation Steps:  The documentation includes pip install commands, highlighting the dependencies required for the evaluation scripts.
+
+
+
+
 
 ### **4.3 Advantages of GPTQ: Speed, Compression, NVIDIA GPU Optimization**
 
