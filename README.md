@@ -456,7 +456,7 @@ For the purpose of running LLMs on resource-constrained Linux systems, we will p
 ---
 
 
-**4: GPTQ and ExLlamaV2 - High-Performance Quantization**
+## **4: GPTQ and ExLlamaV2 - High-Performance Quantization**
 
 
 **4.1 Introduction to GPTQ (Generative Post-training Quantization)**
@@ -639,7 +639,7 @@ model_size_mb = os.path.getsize(os.path.join(model_name_or_path, model_basename 
 print(f"Quantized model size: {model_size_mb:.2f} MB")  # Or GB if larger
 ```
 
-5: GGML/GGUF and llama.cpp - CPU and Cross-Platform Efficiency
+## 5: GGML/GGUF and llama.cpp - CPU and Cross-Platform Efficiency
 
 5.1 Introduction to GGML/GGUF Model Format
 
@@ -768,7 +768,7 @@ threads to use for CPU inference. Adjust this based on your CPU core count. Star
 ---
 
 
-**6: Bitsandbytes - Easy Quantization in Transformers**
+## **6: Bitsandbytes - Easy Quantization in Transformers**
 
 
 **6.1 Introduction to Bitsandbytes Library**
@@ -905,13 +905,13 @@ generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
 print(generated_text)
 ```
 
-7: Model Selection - Choosing Efficient LLM Architectures
+## 7: Model Selection - Choosing Efficient LLM Architectures
 
-7.1 Importance of Model Architecture for Efficiency
+#### 7.1 Importance of Model Architecture for Efficiency
 
 Beyond quantization, the choice of LLM architecture itself plays a crucial role in determining inference efficiency. Different model architectures have varying levels of computational complexity and memory requirements. Selecting a more efficient architecture can be as impactful as, or even more impactful than, post-hoc optimization techniques like quantization.
 
-7.2 Choosing Smaller Models vs. Larger Models
+#### 7.2 Choosing Smaller Models vs. Larger Models
 
 The most straightforward way to reduce resource consumption is to choose smaller LLMs. Model size is often measured by the number of parameters (e.g., 7B, 13B, 70B, 175B).
 
@@ -927,7 +927,7 @@ The most straightforward way to reduce resource consumption is to choose smaller
 
 The "best" model size depends entirely on your specific use case, resource constraints, and desired output quality. For resource-limited environments, starting with smaller models and then scaling up as needed is a good strategy.
 
-7.3 Distilled/Optimized Models (e.g., MobileBERT, DistilBERT, Smaller LLM Variants)
+#### 7.3 Distilled/Optimized Models (e.g., MobileBERT, DistilBERT, Smaller LLM Variants)
 
 "Distillation" is a technique where a smaller "student" model is trained to mimic the behavior of a larger "teacher" model. This can result in smaller models that retain a surprisingly good level of performance compared to their larger counterparts.
 
@@ -938,7 +938,7 @@ The "best" model size depends entirely on your specific use case, resource const
 
     Optimized Model Variants: Some model families offer specifically optimized "small" or "efficient" variants. For example, within the Llama 2 family, the 7B and 13B models are considerably smaller and more resource-friendly than the 70B model, while still offering strong performance.
 
-7.4 Tokenizer Efficiency (SentencePiece, Tiktoken, BPE)
+#### 7.4 Tokenizer Efficiency (SentencePiece, Tiktoken, BPE)
 
 The tokenizer, which converts text into numerical tokens that the model processes, also impacts efficiency. Different tokenizers have varying levels of efficiency in terms of:
 
@@ -954,7 +954,7 @@ Common tokenizer types include:
 
 While tokenizer choice is less of a primary optimization target compared to model size and quantization, being aware of tokenizer efficiency is helpful.
 
-7.5 Specific Model Recommendations for Resource-Constrained Systems
+#### 7.5 Specific Model Recommendations for Resource-Constrained Systems
 
 For resource-constrained systems, consider these model families and specific models:
 
@@ -964,7 +964,7 @@ For resource-constrained systems, consider these model families and specific mod
     Smaller Llama 2 Variants (7B, 13B): Llama 2 7B and 13B models are more resource-friendly than the 70B version while still offering strong performance.
     OPT (Open Pretrained Transformer) Family: Smaller OPT models (e.g., OPT-350m, OPT-1.3b) can be useful for experimentation and resource-constrained settings.
 
-7.6 Using Hugging Face Hub Filters to Find Efficient Models
+#### 7.6 Using Hugging Face Hub Filters to Find Efficient Models
 
 The Hugging Face Hub provides filters to help you find models based on size and other criteria:
 
@@ -973,7 +973,7 @@ The Hugging Face Hub provides filters to help you find models based on size and 
     Tags: Look for tags like "quantized", "distilled", "efficient" to find optimized models.
     Sorting by Downloads/Likes: Models with more downloads or "likes" are often popular and well-regarded in the community.
 
-7.7 Model Selection Criteria Beyond Size: Task Suitability and Architecture
+#### 7.7 Model Selection Criteria Beyond Size: Task Suitability and Architecture
 
 When selecting a model, consider not just size but also:
 
@@ -983,31 +983,31 @@ When selecting a model, consider not just size but also:
 
 Choosing the right model architecture is a fundamental optimization step. By prioritizing smaller, distilled, or efficient model variants, you can significantly reduce resource requirements and improve inference speed, often without drastically sacrificing output quality, especially for many common LLM use cases.
 
-8: Offloading to System RAM and NVMe - Expanding Memory Capacity
+## 8: Offloading to System RAM and NVMe - Expanding Memory Capacity
 
-8.1 Concept of Model Offloading
+#### 8.1 Concept of Model Offloading
 
 Model offloading is a technique to overcome VRAM limitations by moving parts of the LLM from GPU VRAM to system RAM or even slower storage like NVMe SSDs. When your model is too large to fit entirely into VRAM, offloading becomes necessary to run inference.
 
-8.2 VRAM Overflow and Necessity of Offloading
+#### 8.2 VRAM Overflow and Necessity of Offloading
 
 As discussed in Chapter 2, VRAM is a critical resource for GPU-accelerated LLM inference. If the model size, along with activations and KV cache, exceeds the available VRAM, you will encounter "out-of-memory" errors. Offloading provides a way to handle this VRAM overflow by temporarily moving some model layers or data to system RAM or NVMe during inference.
 
-8.3 Offloading to System RAM: Speed Trade-off
+#### 8.3 Offloading to System RAM: Speed Trade-off
 
 Offloading to system RAM is the most common type of offloading.
 
     Mechanism: When offloading to system RAM, some layers of the neural network (or parts of the model's state) are moved from VRAM to system RAM. When these offloaded layers are needed for computation during inference, they are transferred back to VRAM, computations are performed, and then results might be moved back to system RAM if necessary.
     Speed Trade-off: Accessing system RAM is significantly slower than accessing VRAM. Data needs to be transferred over the PCIe bus between the GPU and system RAM. This data transfer introduces latency and reduces inference speed. Inference with system RAM offloading will always be slower than running the entire model in VRAM. However, it allows you to run models that would otherwise be impossible to load due to VRAM constraints.
 
-8.4 Offloading to NVMe SSD: Better Performance than HDD, Still Slower than VRAM
+#### 8.4 Offloading to NVMe SSD: Better Performance than HDD, Still Slower than VRAM
 
 For even larger models that might exceed both VRAM and system RAM capacity, offloading to NVMe SSD (Non-Volatile Memory express Solid State Drive) is an option.
 
     Mechanism: Similar to system RAM offloading, but data is moved to NVMe SSD storage. NVMe SSDs are much faster than traditional HDDs (Hard Disk Drives) but still significantly slower than system RAM and VRAM.
     Performance: Offloading to NVMe is slower than system RAM offloading but can still be faster than HDD offloading (which is generally not recommended for LLM inference due to extreme slowness). NVMe offloading is a last resort for very large models on systems with very limited VRAM and system RAM.
 
-8.5 Recipe: Model Offloading with accelerate - Step-by-Step
+#### 8.5 Recipe: Model Offloading with accelerate - Step-by-Step
 
 The accelerate library from Hugging Face simplifies model offloading in PyTorch-based Transformers models. Here's a recipe:
 
@@ -1058,7 +1058,7 @@ from accelerate import dispatch_model
 
     Monitor Performance: Be aware that offloading will slow down inference. Monitor inference speed and adjust offloading settings (e.g., memory limits in infer_auto_device_map) to find a balance between memory usage and performance.
 
-8.6 Monitoring I/O Performance with iostat
+#### 8.6 Monitoring I/O Performance with iostat
 
 When offloading to system RAM or especially NVMe, I/O (Input/Output) performance becomes more important. You can use the iostat command on Linux to monitor disk I/O statistics.
 
@@ -1069,7 +1069,7 @@ iostat -x 1
 
 This command will show extended I/O statistics every 1 second. Look at columns like %util (disk utilization), await (average wait time for I/O requests), rMB/s (read MB per second), and wMB/s (write MB per second) to understand disk I/O activity during inference with offloading. High disk utilization and long wait times can indicate I/O bottlenecks.
 
-8.7 Using accelerate Library for Model Offloading (Conceptual Example)
+#### 8.7 Using accelerate Library for Model Offloading (Conceptual Example)
 
 ```
 
@@ -1102,13 +1102,13 @@ print(model.device_map)  # Print the device map to see layer placement
 
 Model offloading is a powerful technique for running very large LLMs that exceed VRAM capacity. However, be mindful of the performance trade-offs, especially when offloading to system RAM or NVMe. Optimize your offloading strategy and monitor performance to find the best balance for your specific hardware and model.
 
-9: Memory Mapping (mmap) for Efficient Model Loading
+## 9: Memory Mapping (mmap) for Efficient Model Loading
 
-9.1 Concept of Memory Mapping (mmap)
+#### 9.1 Concept of Memory Mapping (mmap)
 
 Memory mapping, often referred to as mmap (memory map), is a powerful operating system feature that can significantly enhance the efficiency of loading large files, such as LLM model weights, into memory. It provides a way to directly map a file on disk to a process's virtual memory space, eliminating the need for traditional read/write system calls for accessing file data.
 
-9.2 Benefits of mmap for LLM Loading: Speed, Memory Efficiency
+#### 9.2 Benefits of mmap for LLM Loading: Speed, Memory Efficiency
 
 For loading large LLM models, mmap offers several key advantages:
 
@@ -1120,7 +1120,7 @@ For loading large LLM models, mmap offers several key advantages:
         Reduced Memory Footprint: mmap can lead to a lower initial memory footprint. Only the actively used parts of the model are loaded into RAM. If your inference workload only accesses a subset of the model parameters at any given time, mmap can prevent the entire model from being loaded into RAM simultaneously.
         Shared Memory Potential: If multiple processes need to access the same model file, mmap can enable efficient sharing of the model data in RAM. Multiple processes can map the same file into their virtual address spaces. The operating system can then share the physical RAM pages containing the model data between these processes, reducing overall memory consumption when running multiple instances of an LLM-based application.
 
-9.3 How mmap Works with Model Files (e.g., .safetensors, .gguf)
+#### 9.3 How mmap Works with Model Files (e.g., .safetensors, .gguf)
 
 Modern model file formats like .safetensors and .gguf are often designed to be efficiently used with mmap. These formats typically store model weights in a contiguous layout on disk, which is well-suited for memory mapping. Libraries that load these formats (like safetensors Python library or llama.cpp for GGUF) often internally leverage mmap to load model weights.
 
@@ -1132,13 +1132,13 @@ When you load a .safetensors or .gguf model using a library that utilizes mmap, 
 
 Behind the scenes, the operating system manages the actual loading of data from disk into RAM as your application accesses the model weights through this memory mapping.
 
-9.4 Practical Considerations:
+#### 9.4 Practical Considerations:
 
     File System Caching: Operating systems aggressively use file system caching. Even without explicit mmap, if you repeatedly access the same parts of a model file through traditional file I/O, the operating system's cache might keep frequently accessed data in RAM. However, mmap provides a more direct and controlled way to leverage this caching behavior and can be more efficient for large files.
 
     Shared Memory: The shared memory aspect of mmap is particularly beneficial in scenarios where you are running multiple LLM inference processes concurrently, such as in a server environment. By using mmap, you can potentially reduce the total RAM usage across all processes, as they can share the underlying model data in memory.
 
-9.5 Python Libraries Leveraging mmap:
+#### 9.5 Python Libraries Leveraging mmap:
 
     safetensors library: The safetensors library in Python is explicitly designed to use mmap for efficient loading of .safetensors model files. When you load a .safetensors file using safetensors.torch.load, it internally uses mmap to map the file into memory. This is a key reason why .safetensors is often recommended for fast and memory-efficient model loading in Python-based LLM workflows.
 
@@ -1146,13 +1146,13 @@ Behind the scenes, the operating system manages the actual loading of data from 
 
 In summary, memory mapping (mmap) is a valuable technique for optimizing LLM loading, especially for large models on resource-constrained systems. It offers faster startup times, potentially faster access, and improved memory efficiency by leveraging demand paging and shared memory capabilities of the operating system. Libraries like safetensors and llama.cpp effectively utilize mmap to provide these benefits when working with modern LLM model formats.
 
-10: Compilation and Graph Optimization - Speeding Up Inference
+## 10: Compilation and Graph Optimization - Speeding Up Inference
 
-10.1 Just-In-Time (JIT) Compilation for LLMs
+#### 10.1 Just-In-Time (JIT) Compilation for LLMs
 
 Just-In-Time (JIT) compilation involves compiling parts of the model's computation graph into optimized machine code at runtime, specifically tailored to the hardware and input characteristics. Instead of interpreting the model's operations step-by-step, JIT compilation generates native machine code for critical parts of the computation, leading to substantial performance gains.
 
-10.2 Graph Optimization Techniques
+#### 10.2 Graph Optimization Techniques
 
 Compilation often goes hand-in-hand with graph optimization. These techniques aim to restructure the model's computational graph to improve efficiency before or during compilation. Common graph optimization techniques include:
 
@@ -1161,7 +1161,7 @@ Compilation often goes hand-in-hand with graph optimization. These techniques ai
     Memory Layout Optimization: Rearranging data in memory to improve memory access patterns and cache utilization, reducing memory bandwidth bottlenecks.
     Pruning and Sparsity Exploitation: Removing or zeroing out less important connections (weights) in the model (pruning) and then exploiting this sparsity in computation to reduce the number of operations.
 
-10.3 Libraries for Compilation and Optimization
+#### 10.3 Libraries for Compilation and Optimization
 
 Several libraries and frameworks provide tools for compilation and graph optimization of LLMs:
 
@@ -1170,17 +1170,17 @@ Several libraries and frameworks provide tools for compilation and graph optimiz
     TensorRT (NVIDIA): TensorRT is a high-performance inference SDK from NVIDIA specifically designed for NVIDIA GPUs. It takes trained models (from frameworks like TensorFlow, PyTorch, ONNX) and applies graph optimizations, layer fusion, and kernel auto-tuning to maximize inference throughput and minimize latency on NVIDIA GPUs. TensorRT is particularly effective for achieving very low latency inference.
     DeepSpeed (Microsoft): DeepSpeed, while primarily known for distributed training, also offers inference optimization features, including DeepSpeed-Inference. DeepSpeed-Inference provides kernel optimizations, quantization, and efficient inference kernels, especially for large models and sequence generation tasks.
 
-10.4 Trade-offs: Compilation Time vs. Inference Speedup, Hardware Compatibility
+#### 10.4 Trade-offs: Compilation Time vs. Inference Speedup, Hardware Compatibility
 
     Compilation Time: Compilation, especially with advanced techniques like TensorRT, can sometimes take a significant amount of time upfront. This compilation step is a one-time cost. The trade-off is that this initial compilation time is often offset by much faster inference speeds afterwards.
     Inference Speedup: The speedup achieved through compilation and optimization can be substantial, often ranging from 2x to 10x or even more compared to unoptimized execution, depending on the model, hardware, and optimization techniques used.
     Hardware Compatibility: Some compilation and optimization techniques are highly hardware-specific. For example, TensorRT is primarily designed for NVIDIA GPUs. ONNX Runtime aims for broader hardware compatibility but might offer different levels of optimization on different platforms. TorchScript is generally more portable but might offer less aggressive optimization than specialized tools like TensorRT.
 
-10.5 Conceptual Examples and Tools
+#### 10.5 Conceptual Examples and Tools
 
 
 
-10.6 TorchScript Example (PyTorch Code)
+#### 10.6 TorchScript Example (PyTorch Code)
 
 ```
 
@@ -1235,9 +1235,9 @@ TensorRT typically involves a more complex workflow, often using the TensorRT Py
 
 Choosing the right compilation and optimization approach depends on your specific needs, target hardware, and acceptable trade-offs between compilation time and inference speed. For maximum performance on NVIDIA GPUs, TensorRT is often the top choice. For broader hardware compatibility and easier integration with PyTorch, TorchScript and ONNX Runtime are valuable options. DeepSpeed-Inference is particularly relevant for very large models and sequence generation tasks.
 
-11: Hardware Acceleration - Leveraging GPUs and Specialized Hardware
+## 11: Hardware Acceleration - Leveraging GPUs and Specialized Hardware
 
-11.1 Benefits of GPUs for LLM Inference
+#### 11.1 Benefits of GPUs for LLM Inference
 
 GPUs (Graphics Processing Units) are massively parallel processors originally designed for graphics rendering but are exceptionally well-suited for the matrix multiplications and other linear algebra operations that are at the heart of LLM computations.
 
@@ -1245,30 +1245,30 @@ GPUs (Graphics Processing Units) are massively parallel processors originally de
     High Memory Bandwidth: GPUs have significantly higher memory bandwidth compared to CPUs. This is crucial for feeding the GPU cores with the large amounts of data (model weights, activations) required for LLM inference.
     Specialized Instructions: Modern GPUs often include specialized hardware units and instructions (e.g., Tensor Cores on NVIDIA GPUs) that are optimized for deep learning operations, further accelerating matrix multiplications and convolutions.
 
-11.2 NVIDIA GPUs and CUDA
+#### 11.2 NVIDIA GPUs and CUDA
 
 NVIDIA GPUs, especially their high-end consumer and professional lines (GeForce RTX, NVIDIA RTX, Tesla/A-series, H-series), are the most widely used GPUs for deep learning and LLM inference. NVIDIA's CUDA (Compute Unified Device Architecture) is a parallel computing platform and API that allows developers to program NVIDIA GPUs for general-purpose computations, including deep learning. Libraries like PyTorch, TensorFlow, TensorRT, and ExLlamaV2 are heavily optimized for CUDA and NVIDIA GPUs.
 
-11.3 AMD GPUs and ROCm
+#### 11.3 AMD GPUs and ROCm
 
 AMD GPUs, particularly their Radeon and Radeon Pro series, are also increasingly used for deep learning. ROCm (Radeon Open Compute platform) is AMD's open-source alternative to CUDA. ROCm provides a software stack for GPU-accelerated computing on AMD GPUs. While the ecosystem and library support for ROCm might be slightly less mature than CUDA, ROCm is actively developing and improving, and libraries like llama.cpp and some PyTorch/TensorFlow components support ROCm.
 
-11.4 Apple Silicon GPUs and Metal
+#### 11.4 Apple Silicon GPUs and Metal
 
 Apple Silicon Macs (M1, M2, M3 chips) integrate powerful GPUs directly into the system-on-a-chip (SoC). Apple's Metal framework provides a low-level API for accessing and programming these GPUs for compute tasks. Libraries like llama.cpp and some PyTorch backends support Metal for GPU acceleration on Apple Silicon Macs. Metal offers excellent performance and efficiency on Apple's hardware.
 
-11.5 CPUs with Vector Extensions (AVX-512, AVX2)
+#### 11.5 CPUs with Vector Extensions (AVX-512, AVX2)
 
 While GPUs are generally much faster for LLM inference, modern CPUs also have capabilities for acceleration, particularly through vector extensions like AVX-512 and AVX2 (Advanced Vector Extensions). These extensions allow CPUs to perform Single Instruction, Multiple Data (SIMD) operations, processing multiple data elements simultaneously with a single instruction. Libraries like llama.cpp and optimized CPU inference backends in frameworks like PyTorch and ONNX Runtime leverage AVX-512 and AVX2 to improve CPU inference performance. AVX-512, when available (primarily on high-end Intel and some AMD CPUs), can offer significant speedups for CPU inference.
 
-11.6 Specialized AI Accelerators (Conceptual Overview)
+#### 11.6 Specialized AI Accelerators (Conceptual Overview)
 
 Beyond GPUs and CPUs, there are specialized AI accelerators designed specifically for deep learning workloads. These include:
 
     TPUs (Tensor Processing Units - Google): TPUs are custom ASICs (Application-Specific Integrated Circuits) developed by Google specifically for accelerating machine learning workloads, particularly TensorFlow models. TPUs are highly optimized for matrix multiplications and offer very high performance for certain types of deep learning models. TPUs are primarily available through Google Cloud and Google Colab.
     Inferentia (AWS): AWS Inferentia is another example of a custom AI accelerator, developed by Amazon Web Services. Inferentia is designed for cost-effective and high-performance inference of deep learning models in the cloud.
 
-11.7 Choosing the Right Hardware for Your Budget and Performance Needs - Specific Recommendations
+#### 11.7 Choosing the Right Hardware for Your Budget and Performance Needs - Specific Recommendations
 
 Selecting the appropriate hardware for running LLMs depends on your budget, performance requirements, and use case. Here are more specific hardware recommendations:
 
@@ -1343,7 +1343,7 @@ Remember to always monitor your hardware utilization (CPU, GPU, VRAM, RAM) when 
 ---
 
 
-**12: Conclusion - Summary and Future Directions**
+## **12: Conclusion - Summary and Future Directions**
 
 
 **12.1 Recap of Optimization Techniques Covered**
