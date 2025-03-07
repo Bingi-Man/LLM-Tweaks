@@ -22,7 +22,7 @@
 .
 
     
-#### 2: Understanding Memory Constraints for LLMs
+## 2: Understanding Memory Constraints for LLMs
 
 
 
@@ -36,7 +36,7 @@
 
 .
     
-#### 3: Quantization Techniques - Reducing Model Footprint
+## 3: Quantization Techniques - Reducing Model Footprint
 
 
 3.1 Introduction to Quantization
@@ -49,7 +49,7 @@
 
 .
     
-#### 4: GPTQ and ExLlamaV2 - High-Performance Quantization
+## 4: GPTQ and ExLlamaV2 - High-Performance Quantization
 
 
 4.1 Introduction to GPTQ (Generative Post-training Quantization)
@@ -68,7 +68,7 @@
 
 .
     
-#### 5: GGML/GGUF and llama.cpp - CPU and Cross-Platform Efficiency
+## 5: GGML/GGUF and llama.cpp - CPU and Cross-Platform Efficiency
 
 
 5.1 Introduction to GGML/GGUF Model Format
@@ -87,7 +87,7 @@
 
 .
     
-#### 6: Bitsandbytes - Easy Quantization in Transformers
+## 6: Bitsandbytes - Easy Quantization in Transformers
 
 
 6.1 Introduction to Bitsandbytes Library
@@ -106,7 +106,7 @@
 
 .
     
-#### 7: Model Selection - Choosing Efficient LLM Architectures
+## 7: Model Selection - Choosing Efficient LLM Architectures
 
 
 7.1 Importance of Model Architecture for Efficiency
@@ -125,7 +125,7 @@
 
 .
     
-#### 8: Offloading to System RAM and NVMe - Expanding Memory Capacity
+## 8: Offloading to System RAM and NVMe - Expanding Memory Capacity
 
 
 8.1 Concept of Model Offloading
@@ -144,7 +144,7 @@
 
 .
     
-#### 9: Memory Mapping (mmap) for Efficient Model Loading
+## 9: Memory Mapping (mmap) for Efficient Model Loading
 
 
 9.1 Concept of Memory Mapping (mmap)
@@ -159,7 +159,7 @@
 
 .
     
-#### 10: Compilation and Graph Optimization - Speeding Up Inference
+## 10: Compilation and Graph Optimization - Speeding Up Inference
 
 
 10.1 Just-In-Time (JIT) Compilation for LLMs
@@ -176,7 +176,7 @@
 
 .
     
-#### 11: Hardware Acceleration - Leveraging GPUs and Specialized Hardware
+## 11: Hardware Acceleration - Leveraging GPUs and Specialized Hardware
 
 
 11.1 Benefits of GPUs for LLM Inference
@@ -195,7 +195,7 @@
 
 .
     
-#### 12: Conclusion - Summary and Future Directions
+## 12: Conclusion - Summary and Future Directions
 
 
 12.1 Recap of Optimization Techniques Covered
