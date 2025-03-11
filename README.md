@@ -1936,7 +1936,41 @@ options snd_hda_intel power_save=0
 options snd_hda_intel power_save_controller=N
 options snd_hda_intel enable_msi=1
 
+GRUB_CMDLINE_LINUX_DEFAULT='nohz=off nvme.io_queue_depth=2048 nvme_core.io_timeout=4294967295 nvme_core.admin_timeout=4294967295 nvme_core.default_ps_max_latency_us=0 pcie_aspm=off pcie_port_pm=off nowatchdog pci=assign-busses,realloc,noaer module_blacklist=btrfs-snapshot-overlay,mdraid,btrfs,nouveau,lpc_ich,pci:v00001B21d00001042sv00001849sd00001042bc0Csc03i30,at24 intel_idle.max_cstate=0 idle=poll mitigations=off kernel.randomize_va_space=0 ipv6.disable=1 nmi_watchdog=0 zswap.enabled=0 nvidia-drm.fbdev=1 iommu=soft enable_mtrr_cleanup nvidia_drm.modeset=1 loglevel=3'
 
 
+#!/bin/bash
+xset s noblank s noexpose
+xset dpms 0 0 0
+xset s off
+xset -dpms
+echo "0000:07:00.0" | sudo tee /sys/bus/pci/drivers/xhci_hcd/unbind
+
+#!/bin/bash
+
+##Set power limit to maximum
+
+sudo nvidia-smi --power-limit=200
+
+##Set maximum performance mode
+
+sudo nvidia-settings -a '[gpu:0]/GpuPowerMizerMode=1'
+
+##Set fan control
+
+sudo nvidia-settings -a '[gpu:0]/GPUFanControlState=1'
+sudo nvidia-settings -a '[fan:0]/GPUTargetFanSpeed=100'
 
 
+##Graphics overclocking
+
+sudo nvidia-settings -a '[gpu:0]/GPUGraphicsClockOffsetAllPerformanceLevels=120'
+
+##Memory overclocking
+
+sudo nvidia-settings -a '[gpu:0]/GPUMemoryTransferRateOffsetAllPerformanceLevels=1000'
+
+sudo nano /etc/sysctl.d/20-swap.conf
+sudo sysctl -p /etc/sysctl.d/20-swap.conf
+
+sudo systemctl status fstrim.timer
