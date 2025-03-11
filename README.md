@@ -1918,3 +1918,25 @@ The field of LLM optimization is rapidly evolving. Future trends include:
 
 
 Running Large Language Models on resource-constrained Linux systems is challenging but achievable with the right optimization strategies. By combining quantization, efficient model selection, smart memory management, and hardware acceleration, you can unlock the power of LLMs even on modest hardware.  Keep experimenting, stay updated with the latest advancements, and contribute to the growing community of LLM optimization! This revised guide provides a solid foundation to get you started on your journey. Good luck!
+
+
+
+
+
+
+
+GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 pci=assign-busses pci=realloc pci=noaer module_blacklist=nouveau intel_idle.max_cstate=0 idle=poll mitigations=off kernel.randomize_va_space=0 ipv6.disable=1 nmi_watchdog=0 zswap.enabled=0 nvidia-drm.modeset=1 nvidia-drm.fbdev=1 iommu=soft enable_mtrr_cleanup"
+
+sudo mkinitcpio -P
+
+sudo grub-mkconfig -o /boot/grub/grub.cfg
+
+sudo nano /etc/modprobe.d/audio_disable_powersave.conf
+options snd_hda_intel power_save=0
+options snd_hda_intel power_save_controller=N
+options snd_hda_intel enable_msi=1
+
+
+
+
+
