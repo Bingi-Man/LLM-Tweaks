@@ -1991,5 +1991,12 @@ ACTION=="add", KERNEL=="0000:07:00.0", SUBSYSTEM=="pci", RUN+="/bin/sh -c 'echo 
 ACTION=="add", KERNEL=="0000:00:1c.7", SUBSYSTEM=="pci", RUN+="/bin/sh -c 'echo 1 > /sys/bus/pci/devices/0000:00:1c.7/remove'"
 
 
+/etc/modprobe.d/blacklist.conf
+
+blacklist snd_hda_codec_hdmi
+blacklist mei_me
+blacklist at24
+blacklist lpc_ich
+blacklist i2c_i801
 
 
