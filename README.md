@@ -1999,4 +1999,5 @@ blacklist at24
 blacklist lpc_ich
 blacklist i2c_i801
 
+GRUB_CMDLINE_LINUX_DEFAULT="noexec=off noexec32=off loglevel=7 memory_corruption_check=1 memory_corruption_check_period=0 noautogroup nohibernate acpi_enforce_resources=lax add_efi_memmap efi=nochunk reset_devices apparmor=0 thermal.off=1 usbcore.autosuspend=-1 acpi_osi=! acpi_osi='Windows 2012' noresume mitigations=off kernel.randomize_va_space=0 processor.max_cstate=0 swiotlb=2048 nohz=off nvme.io_queue_depth=2048 nvme_core.io_timeout=4294967295 nvme_core.admin_timeout=4294967295 nvme_core.default_ps_max_latency_us=0 pcie_aspm=off pcie_port_pm=off nowatchdog pci=assign-busses,realloc pcie_ports=native intel_idle.max_cstate=0 nmi_watchdog=0 nosoftlockup nopti nospectre_v1 l1tf=off retbleed=off mds=off tsx_async_abort=off srbds=off kvm.nx_huge_pages=off srbds=off zswap.enabled=0 nvidia-drm.fbdev=1 iommu=soft enable_mtrr_cleanup enable_mtrr_cleanup mtrr_spare_reg_nr=1 nvidia_drm.modeset=1 ibt=off"
 
