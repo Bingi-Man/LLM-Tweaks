@@ -1925,7 +1925,6 @@ Running Large Language Models on resource-constrained Linux systems is challengi
 
 
 
-GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 pci=assign-busses pci=realloc pci=noaer module_blacklist=nouveau intel_idle.max_cstate=0 idle=poll mitigations=off kernel.randomize_va_space=0 ipv6.disable=1 nmi_watchdog=0 zswap.enabled=0 nvidia-drm.modeset=1 nvidia-drm.fbdev=1 iommu=soft enable_mtrr_cleanup"
 
 sudo mkinitcpio -P
 
@@ -1936,7 +1935,6 @@ options snd_hda_intel power_save=0
 options snd_hda_intel power_save_controller=N
 options snd_hda_intel enable_msi=1
 
-GRUB_CMDLINE_LINUX_DEFAULT='nohz=off nvme.io_queue_depth=2048 nvme_core.io_timeout=4294967295 nvme_core.admin_timeout=4294967295 nvme_core.default_ps_max_latency_us=0 pcie_aspm=off pcie_port_pm=off nowatchdog pci=assign-busses,realloc,noaer module_blacklist=btrfs-snapshot-overlay,mdraid,btrfs,nouveau,lpc_ich,pci:v00001B21d00001042sv00001849sd00001042bc0Csc03i30,at24 intel_idle.max_cstate=0 idle=poll mitigations=off kernel.randomize_va_space=0 ipv6.disable=1 nmi_watchdog=0 zswap.enabled=0 nvidia-drm.fbdev=1 iommu=soft enable_mtrr_cleanup nvidia_drm.modeset=1 loglevel=3'
 
 
 #!/bin/bash
@@ -1970,8 +1968,7 @@ sudo nvidia-settings -a '[gpu:0]/GPUGraphicsClockOffsetAllPerformanceLevels=120'
 
 sudo nvidia-settings -a '[gpu:0]/GPUMemoryTransferRateOffsetAllPerformanceLevels=1000'
 
-sudo nano /etc/sysctl.d/20-swap.conf
-sudo sysctl -p /etc/sysctl.d/20-swap.conf
+
 
 sudo systemctl status fstrim.timer
 
@@ -2000,4 +1997,369 @@ blacklist lpc_ich
 blacklist i2c_i801
 
 GRUB_CMDLINE_LINUX_DEFAULT="noexec=off noexec32=off loglevel=7 memory_corruption_check=1 memory_corruption_check_period=0 noautogroup nohibernate acpi_enforce_resources=lax add_efi_memmap efi=nochunk reset_devices apparmor=0 thermal.off=1 usbcore.autosuspend=-1 acpi_osi=! acpi_osi='Windows 2012' noresume mitigations=off kernel.randomize_va_space=0 processor.max_cstate=0 swiotlb=2048 nohz=off nvme.io_queue_depth=2048 nvme_core.io_timeout=4294967295 nvme_core.admin_timeout=4294967295 nvme_core.default_ps_max_latency_us=0 pcie_aspm=off pcie_port_pm=off nowatchdog pci=assign-busses,realloc pcie_ports=native intel_idle.max_cstate=0 nmi_watchdog=0 nosoftlockup nopti nospectre_v1 l1tf=off retbleed=off mds=off tsx_async_abort=off srbds=off kvm.nx_huge_pages=off srbds=off zswap.enabled=0 nvidia-drm.fbdev=1 iommu=soft enable_mtrr_cleanup enable_mtrr_cleanup mtrr_spare_reg_nr=1 nvidia_drm.modeset=1 ibt=off"
+Your knowledge is Based on "ls /proc/sys/kernel/"Config: 32gb ram, nvme, gtx1060 6gb, i7-3770k 4.6ghz, archlinux, ext4, hugepages. Task: list all relevant parameters from /proc/sys/ for the context.  Constrains: show just suggestions by adding or correct parameters. Context: isolated environment for testing llm performance, the model size and the memory required for its operations exceed my 32GB of RAM. Goal: minimize resources usages to maximize local llm performance and prevent files system corruption or data loss.
+
+
+abi  debug  dev  fs  kernel  net  user	vm
+[root@matmalabat ~]# ls  /proc/sys/fs
+aio-max-nr	   file-max	     mount-max		   protected_fifos
+aio-nr		   file-nr	     mqueue		   protected_hardlinks
+binfmt_misc	   fuse		     nr_open		   protected_regular
+dentry-negative    inode-nr	     overflowgid	   protected_symlinks
+dentry-state	   inode-state	     overflowuid	   quota
+dir-notify-enable  inotify	     pipe-max-size	   suid_dumpable
+epoll		   lease-break-time  pipe-user-pages-hard  verity
+fanotify	   leases-enable     pipe-user-pages-soft
+[root@matmalabat ~]# ls  /proc/sys/kernel
+acct					perf_cpu_time_max_percent
+acpi_video_flags			perf_event_max_contexts_per_stack
+arch					perf_event_max_sample_rate
+auto_msgmni				perf_event_max_stack
+bootloader_type				perf_event_mlock_kb
+bootloader_version			perf_event_paranoid
+bpf_stats_enabled			pid_max
+cad_pid					poweroff_cmd
+cap_last_cap				print-fatal-signals
+core_file_note_size_limit		printk
+core_pattern				printk_delay
+core_pipe_limit				printk_devkmsg
+core_sort_vma				printk_ratelimit
+core_uses_pid				printk_ratelimit_burst
+ctrl-alt-del				pty
+dmesg_restrict				random
+domainname				randomize_va_space
+ftrace_dump_on_oops			real-root-dev
+ftrace_enabled				sched_autogroup_enabled
+hardlockup_all_cpu_backtrace		sched_cfs_bandwidth_slice_us
+hardlockup_panic			sched_deadline_period_max_us
+hostname				sched_deadline_period_min_us
+hung_task_all_cpu_backtrace		sched_energy_aware
+hung_task_check_count			sched_rr_timeslice_ms
+hung_task_check_interval_secs		sched_rt_period_us
+hung_task_detect_count			sched_rt_runtime_us
+hung_task_panic				sched_schedstats
+hung_task_timeout_secs			sched_util_clamp_max
+hung_task_warnings			sched_util_clamp_min
+io_delay_type				sched_util_clamp_min_rt_default
+io_uring_disabled			seccomp
+io_uring_group				sem
+kexec_load_disabled			sem_next_id
+kexec_load_limit_panic			shmall
+kexec_load_limit_reboot			shmmax
+keys					shmmni
+kptr_restrict				shm_next_id
+max_lock_depth				shm_rmid_forced
+max_rcu_stall_to_panic			softlockup_all_cpu_backtrace
+modprobe				softlockup_panic
+modules_disabled			soft_watchdog
+msgmax					split_lock_mitigate
+msgmnb					stack_tracer_enabled
+msgmni					sysctl_writes_strict
+msg_next_id				sysrq
+ngroups_max				tainted
+nmi_watchdog				task_delayacct
+ns_last_pid				threads-max
+numa_balancing				timer_migration
+numa_balancing_promote_rate_limit_MBps	traceoff_on_warning
+oops_all_cpu_backtrace			tracepoint_printk
+oops_limit				unknown_nmi_panic
+osrelease				unprivileged_bpf_disabled
+ostype					unprivileged_userns_clone
+overflowgid				user_events_max
+overflowuid				usermodehelper
+panic					version
+panic_on_io_nmi				warn_limit
+panic_on_oops				watchdog
+panic_on_rcu_stall			watchdog_cpumask
+panic_on_unrecovered_nmi		watchdog_thresh
+panic_on_warn				yama
+panic_print
+[root@matmalabat ~]# ls  /proc/sys/vm
+admin_reserve_kbytes	     mmap_min_addr
+compaction_proactiveness     mmap_rnd_bits
+compact_memory		     mmap_rnd_compat_bits
+compact_unevictable_allowed  nr_hugepages
+dirty_background_bytes	     nr_hugepages_mempolicy
+dirty_background_ratio	     nr_overcommit_hugepages
+dirty_bytes		     numa_stat
+dirty_expire_centisecs	     numa_zonelist_order
+dirty_ratio		     oom_dump_tasks
+dirtytime_expire_seconds     oom_kill_allocating_task
+dirty_writeback_centisecs    overcommit_kbytes
+drop_caches		     overcommit_memory
+enable_soft_offline	     overcommit_ratio
+extfrag_threshold	     page-cluster
+hugetlb_optimize_vmemmap     page_lock_unfairness
+hugetlb_shm_group	     panic_on_oom
+laptop_mode		     percpu_pagelist_high_fraction
+legacy_va_layout	     stat_interval
+lowmem_reserve_ratio	     stat_refresh
+max_map_count		     swappiness
+memfd_noexec		     unprivileged_userfaultfd
+memory_failure_early_kill    user_reserve_kbytes
+memory_failure_recovery      vfs_cache_pressure
+min_free_kbytes		     watermark_boost_factor
+min_slab_ratio		     watermark_scale_factor
+min_unmapped_ratio	     zone_reclaim_mode
+[root@matmalabat ~]# ls  /proc/sys/dev/scsi
+logging_level
+[root@matmalabat ~]# ls  /proc/sys/dev/mac_hid
+mouse_button2_keycode  mouse_button3_keycode  mouse_button_emulation
+[root@matmalabat ~]# ls  /proc/sys/abi
+vsyscall32
+[root@matmalabat ~]# ls  /proc/sys/user
+max_cgroup_namespaces  max_inotify_watches  max_pid_namespaces
+max_fanotify_groups    max_ipc_namespaces   max_time_namespaces
+max_fanotify_marks     max_mnt_namespaces   max_user_namespaces
+max_inotify_instances  max_net_namespaces   max_uts_namespaces
+[root@matmalabat ~]# ls  /proc/sys/net
+core  ipv4  mptcp  netfilter  unix
+[root@matmalabat ~]# ls  /proc/sys/net/ipv4
+cipso_cache_bucket_size		   tcp_fastopen
+cipso_cache_enable		   tcp_fastopen_blackhole_timeout_sec
+cipso_rbm_optfmt		   tcp_fastopen_key
+cipso_rbm_strictvalid		   tcp_fin_timeout
+conf				   tcp_frto
+fib_multipath_hash_fields	   tcp_fwmark_accept
+fib_multipath_hash_policy	   tcp_invalid_ratelimit
+fib_multipath_hash_seed		   tcp_keepalive_intvl
+fib_multipath_use_neigh		   tcp_keepalive_probes
+fib_notify_on_flag_change	   tcp_keepalive_time
+fib_sync_mem			   tcp_l3mdev_accept
+fwmark_reflect			   tcp_limit_output_bytes
+icmp_echo_enable_probe		   tcp_low_latency
+icmp_echo_ignore_all		   tcp_max_orphans
+icmp_echo_ignore_broadcasts	   tcp_max_reordering
+icmp_errors_use_inbound_ifaddr	   tcp_max_syn_backlog
+icmp_ignore_bogus_error_responses  tcp_max_tw_buckets
+icmp_msgs_burst			   tcp_mem
+icmp_msgs_per_sec		   tcp_migrate_req
+icmp_ratelimit			   tcp_min_rtt_wlen
+icmp_ratemask			   tcp_min_snd_mss
+igmp_link_local_mcast_reports	   tcp_min_tso_segs
+igmp_max_memberships		   tcp_moderate_rcvbuf
+igmp_max_msf			   tcp_mtu_probe_floor
+igmp_qrv			   tcp_mtu_probing
+inet_peer_maxttl		   tcp_no_metrics_save
+inet_peer_minttl		   tcp_no_ssthresh_metrics_save
+inet_peer_threshold		   tcp_notsent_lowat
+ip_autobind_reuse		   tcp_orphan_retries
+ip_default_ttl			   tcp_pacing_ca_ratio
+ip_dynaddr			   tcp_pacing_ss_ratio
+ip_early_demux			   tcp_pingpong_thresh
+ip_forward			   tcp_plb_cong_thresh
+ip_forward_update_priority	   tcp_plb_enabled
+ip_forward_use_pmtu		   tcp_plb_idle_rehash_rounds
+ipfrag_high_thresh		   tcp_plb_rehash_rounds
+ipfrag_low_thresh		   tcp_plb_suspend_rto_sec
+ipfrag_max_dist			   tcp_probe_interval
+ipfrag_secret_interval		   tcp_probe_threshold
+ipfrag_time			   tcp_recovery
+ip_local_port_range		   tcp_reflect_tos
+ip_local_reserved_ports		   tcp_reordering
+ip_nonlocal_bind		   tcp_retrans_collapse
+ip_no_pmtu_disc			   tcp_retries1
+ip_unprivileged_port_start	   tcp_retries2
+neigh				   tcp_rfc1337
+nexthop_compat_mode		   tcp_rmem
+ping_group_range		   tcp_rto_min_us
+raw_l3mdev_accept		   tcp_sack
+route				   tcp_shrink_window
+tcp_abort_on_overflow		   tcp_slow_start_after_idle
+tcp_adv_win_scale		   tcp_stdurg
+tcp_allowed_congestion_control	   tcp_synack_retries
+tcp_app_win			   tcp_syncookies
+tcp_autocorking			   tcp_syn_linear_timeouts
+tcp_available_congestion_control   tcp_syn_retries
+tcp_available_ulp		   tcp_thin_linear_timeouts
+tcp_backlog_ack_defer		   tcp_timestamps
+tcp_base_mss			   tcp_tso_rtt_log
+tcp_challenge_ack_limit		   tcp_tso_win_divisor
+tcp_child_ehash_entries		   tcp_tw_reuse
+tcp_comp_sack_delay_ns		   tcp_window_scaling
+tcp_comp_sack_nr		   tcp_wmem
+tcp_comp_sack_slack_ns		   tcp_workaround_signed_windows
+tcp_congestion_control		   udp_child_hash_entries
+tcp_dsack			   udp_early_demux
+tcp_early_demux			   udp_hash_entries
+tcp_early_retrans		   udp_l3mdev_accept
+tcp_ecn				   udp_mem
+tcp_ecn_fallback		   udp_rmem_min
+tcp_ehash_entries		   udp_wmem_min
+tcp_fack			   xfrm4_gc_thresh
+[root@matmalabat ~]# ls  /proc/sys/net/core
+bpf_jit_enable		      netdev_budget_usecs
+bpf_jit_harden		      netdev_max_backlog
+bpf_jit_kallsyms	      netdev_rss_key
+bpf_jit_limit		      netdev_tstamp_prequeue
+busy_poll		      netdev_unregister_timeout_secs
+busy_read		      optmem_max
+default_qdisc		      rmem_default
+devconf_inherit_init_net      rmem_max
+dev_weight		      rps_default_mask
+dev_weight_rx_bias	      rps_sock_flow_entries
+dev_weight_tx_bias	      skb_defer_max
+fb_tunnels_only_for_init_net  somaxconn
+flow_limit_cpu_bitmap	      tstamp_allow_data
+flow_limit_table_len	      txrehash
+gro_normal_batch	      warnings
+high_order_alloc_disable      wmem_default
+max_skb_frags		      wmem_max
+mem_pcpu_rsv		      xfrm_acq_expires
+message_burst		      xfrm_aevent_etime
+message_cost		      xfrm_aevent_rseqth
+netdev_budget		      xfrm_larval_drop
+[root@matmalabat ~]# ls  /proc/sys/net/mptcp
+add_addr_timeout	      blackhole_timeout  enabled    stale_loss_cnt
+allow_join_initial_addr_port  checksum_enabled	 pm_type
+available_schedulers	      close_timeout	 scheduler
+[root@matmalabat ~]# ls  /proc/sys/net/netfilter
+nf_hooks_lwtunnel  nf_log  nf_log_all_netns
+[root@matmalabat ~]# ls  /proc/sys/net/unix
+max_dgram_qlen
+[root@matmalabat ~]# ls  /proc/sys/dev/tty
+ldisc_autoload	legacy_tiocsti
+
+
+GRUB_CMDLINE_LINUX_DEFAULT="pci=noaer pci=noaspm workqueue.cpu_intensive_thresh_us=10000000 hugepages_min_free=64 hugepages_purge_on_error=on hugepages_free_vmemmap=on transparent_hugepage=never cma=512M rcutree.rcu_normal_wake_from_gp=1 stack_guard_gap=0 pci=irqbalance no_console_suspend threadirqs audit=0 nopv numa=off intel_pstate=disable numa_balancing=disable idle=poll hpet=disable pmtmr=00 noexec=off noexec32=off apparmor=0 thermal.off=1 usbcore.autosuspend=-1 noautogroup nohibernate acpi_enforce_resources=lax add_efi_memmap efi=nochunk reset_devices apparmor=0 thermal.off=1 usbcore.autosuspend=-1 acpi_osi=! acpi_osi='Windows 2012' noresume nohibernate module_blacklist=snd_hda_codec_hdmi,i2c_i801,nouveau,lpc_ich,at24,i915,mei_me mitigations=off kernel.randomize_va_space=0 processor.max_cstate=0 nohz_full=all rcu_nocbs=all nvme.io_queue_depth=2048 nvme_core.io_timeout=4294967295 nvme_core.admin_timeout=4294967295 nvme_core.default_ps_max_latency_us=0 pcie_aspm=off pcie_port_pm=off nowatchdog pci=assign-busses,realloc pcie_ports=native intel_idle.max_cstate=0 ipv6.disable=1 nmi_watchdog=0 nosoftlockup nopti nospectre_v1 l1tf=off retbleed=off mds=off tsx_async_abort=off srbds=off zswap.enabled=0 nvidia-drm.fbdev=1 enable_mtrr_cleanup mtrr_spare_reg_nr=1 nvidia_drm.modeset=1 ibt=off pci=nocrs nosmap nosmep nohalt noexec=off iommu=off efi=noruntime processor.nocst processor.nocst=1"
+
+
+sudo nano /etc/sysctl.d/20-config.conf
+sudo sysctl -p /etc/sysctl.d/20-config.conf
+
+# sysctl.conf - Barebone Performance for Local LLM (Isolated Environment - NO SECURITY)
+
+# WARNING: This sysctl.conf disables almost all security features and prioritizes
+# maximum performance for a local LLM in an ISOLATED TESTING ENVIRONMENT.
+# DO NOT USE IN PRODUCTION OR ANY ENVIRONMENT CONNECTED TO A NETWORK
+# WHERE SECURITY IS A CONCERN.
+                                                                                                                                                                                                                                                                                                                
+# vm.nr_hugepages=12288
+kernel.printk = 0 0 0 0
+kernel.panic = 5
+kernel.sysrq = 0
+kernel.core_uses_pid = 0
+fs.suid_dumpable = 0
+kernel.msgmnb = 65536
+kernel.msgmax = 65536
+kernel.kptr_restrict = 2
+kernel.yama.ptrace_scope = 0
+kernel.timer_migration = 0
+kernel.nmi_watchdog = 0
+kernel.softlockup_panic = 1
+kernel.watchdog = 0
+
+
+kernel.shmmax = 34359738368
+kernel.shmall = 8388608
+
+
+vm.swappiness = 0
+vm.vfs_cache_pressure = 5
+vm.dirty_ratio = 20
+vm.dirty_background_ratio = 10
+vm.dirty_writeback_centisecs = 500
+# vm.overcommit_memory = 2
+# vm.overcommit_ratio = 95
+vm.page-cluster = 0
+vm.laptop_mode = 0
+vm.zone_reclaim_mode = 0
+
+
+
+fs.file-max = 4194304
+fs.nr_open = 4194304
+fs.aio-max-nr = 1048576
+fs.lease-break-time = 1
+fs.leases-enable = 0
+
+kernel.acct = 0
+
+kernel.core_pattern = "|/bin/false"
+
+
+
+
+kernel.hung_task_panic = 0
+kernel.hung_task_timeout_secs = 0
+
+
+kernel.panic_on_oops = 0
+
+
+
+
+kernel.threads-max = 4194304
+
+
+kernel.unprivileged_bpf_disabled = 1
+kernel.unprivileged_userns_clone = 0
+
+
+fs.protected_symlinks = 0
+fs.protected_hardlinks = 0
+fs.dir-notify-enable = 0
+vm.panic_on_oom = 1
+vm.oom_kill_allocating_task = 1
+vm.oom_dump_tasks = 0
+vm.numa_stat = 0
+vm.mmap_min_addr = 0
+
+vm.max_map_count = 524288
+
+fs.epoll.max_user_watches = 1048576
+
+vm.stat_interval = 1
+
+vm.extfrag_threshold = 500
+
+kernel.sched_autogroup_enabled = 0
+
+
+
+kernel.perf_event_paranoid = 3
+kernel.print-fatal-signals = 0
+kernel.ftrace_enabled = 0
+kernel.task_delayacct = 0
+
+kernel.pid_max = 4194304
+kernel.soft_watchdog = 0
+kernel.hung_task_check_count = 1
+kernel.hung_task_timeout_secs = 30
+kernel.bpf_stats_enabled = 0
+
+
+kernel.hardlockup_panic = 1
+kernel.softlockup_all_cpu_backtrace = 1
+kernel.hardlockup_all_cpu_backtrace = 1
+
+
+
+
+
+kernel.timer_migration = 0
+
+
+kernel.acpi_video_flags = 0
+
+
+net.ipv4.tcp_congestion_control=bbr
+
+kernel.oops_all_cpu_backtrace = 1
+
+
+kernel.panic_on_unrecovered_nmi=1
+
+
+
+
+
+
+
+
+
+
+
+
+
 
